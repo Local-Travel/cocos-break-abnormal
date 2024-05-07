@@ -5,8 +5,9 @@ const { ccclass, property } = _decorator;
 @ccclass('Drag')
 export class Drag extends Component {
 
-    private _isDragAble: boolean = true;
-    private _oldPos: Vec3 = null;// 最原始的位置
+    private _isDragAble: boolean = true; // 是否可以拖拽
+    private _oldPos: Vec3 = null; // 最原始的位置
+    private _dragNum: number = 0; // 拖拽次数
     
     onLoad() {
         this._oldPos = this.node.position.clone();
@@ -53,6 +54,14 @@ export class Drag extends Component {
 
     setIsDragAble(isDragAble: boolean) {
         this._isDragAble = isDragAble;
+    }
+
+    setDragNum(num: number) {
+        this._dragNum = num;
+    }
+
+    getDragNum() {
+        return this._dragNum;
     }
 
     resetPosition() {

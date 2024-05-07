@@ -3,6 +3,7 @@ import { Constant } from '../util/Constant';
 import { DragData } from '../data/DragData';
 const { ccclass, property } = _decorator;
 
+/** 倒三角页面 */
 @ccclass('PageInvertTriangle')
 export class PageInvertTriangle extends Component {
     @property(Node)

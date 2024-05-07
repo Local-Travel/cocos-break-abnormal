@@ -1,4 +1,4 @@
-import { _decorator, Component, director, EventTouch, Graphics, misc, Node, v2, v3, Vec2, Vec3 } from 'cc';
+import { _decorator, Color, Component, director, EventTouch, Graphics, misc, Node, v2, v3, Vec2, Vec3 } from 'cc';
 import { Drag } from './Drag';
 import { Constant } from '../util/Constant';
 const { ccclass, property } = _decorator;
@@ -77,7 +77,12 @@ export class DragControl extends Component {
                 Constant.dragManager.setDragListValue(this._index, val[2]);
                 Constant.dragManager.setDragListValue(startIndex, null);
             }
-            this._dragCount++;
+            
+            const k = drag.getDragNum();
+            if (k === 0) {// 该节点没有被拖动过
+                this._dragCount++;
+            }
+            drag.setDragNum(k + 1);
         }
 
         if (this._dragCount >= Constant.dragManager.dragCount) {
@@ -133,12 +138,13 @@ export class DragControl extends Component {
         const pos = this.getEmptyIndexPos(index);
         if (pos) {
             const certer = v2(pos.x, pos.y);
-            const spaceAngle = 10;
-            const deltaAngle = 10;
+            const spaceAngle = 20;
+            const deltaAngle = 20;
             const angle = spaceAngle + deltaAngle;
             const radius = Constant.dragManager.size / 2;
 
-            this._g.lineWidth = 2;
+            this._g.lineWidth = 5;
+            this._g.strokeColor = Color.RED;
             for(let i = 0; i < 360; i+= angle) {
                 const sR = misc.degreesToRadians(i);
                 const eR = misc.degreesToRadians(i + deltaAngle);

@@ -19,16 +19,14 @@ export class Utils {
     static convertRowColToPosCircle(row: number, col: number, size: number, startX: number, startY: number): Vec3 {
         const x = startX + col * size + size / 2 * (row % 2 + 1);
         const y = startY - (row * size / 2 * Math.sqrt(3) + size / 2);
-        console.log('convertRowColToPosCircle', row, col, x, y)
         return new Vec3(x, y, 0);
     }
 
     /** 根据位置转换行列-圆，左上角起始点 */
     static convertPosToRowColCircle(pos: Vec3, size: number, startX: number, startY: number): number[] {
         const row = Math.round((startY - pos.y - size / 2) / (size / 2 * Math.sqrt(3)));
-        const rr = row < 0 ? 0 : row;
+        // const rr = row < 0 ? 0 : row;
         const col = Math.round((pos.x - startX - size / 2 * (row % 2 + 1)) / size);
-        console.log('convertPosToRowColCircle', row, col, pos.x, pos.y)
         return [row, col];
     }
 
