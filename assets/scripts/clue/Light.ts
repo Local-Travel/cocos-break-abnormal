@@ -1,4 +1,4 @@
-import { _decorator, CCInteger, Component, EventTouch, Graphics, Node, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, CCInteger, Color, Component, EventTouch, Graphics, Node, UITransform, Vec2, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Light')
@@ -15,6 +15,7 @@ export class Light extends Component {
     private _maskUITransform: UITransform = null;
     private _parentUITransform: UITransform = null;
     private _g: Graphics = null;
+    private _childG: Graphics = null;
 
     onLoad() {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
@@ -24,6 +25,7 @@ export class Light extends Component {
 
         this._maskUITransform = this.mask.getComponent(UITransform);
         this._g = this.mask.getComponent(Graphics);
+        // this._childG = this.mask.getChildByName('Graphics').getComponent(Graphics);
         this._parentUITransform = this.light.parent.getComponent(UITransform);
 
     }
@@ -47,8 +49,6 @@ export class Light extends Component {
     onTouchStart(event: EventTouch) {
         // const wPos = this.getWorldPos(event);
         // this.addCircle(wPos);
-        const pos = event.getLocation();
-        console.log('pos', pos);
     }
 
     onTouchMove(event: EventTouch) {
@@ -103,11 +103,19 @@ export class Light extends Component {
     addCircle(pos: Vec3) {
         // 画一个圆形节点
         this._g.circle(pos.x, pos.y, this.size);
+        // this._g.fillColor = new Color(255, 255, 255, 255);
         this._g.fill();
+        // this._g.stroke();
+
+
+        // 画一个圆形子节点
+        // this._childG.circle(pos.x, pos.y, this.size * 1.5);
+        // this._childG.fill();
     }
 
     clearCircle() {
         this._g.clear();
+        // this._childG.clear();
     }
 }
 
