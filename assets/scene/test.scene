@@ -176,7 +176,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 6
@@ -238,7 +238,7 @@
     },
     "_depth": 1,
     "_stencil": 0,
-    "_clearFlags": 14,
+    "_clearFlags": 6,
     "_rect": {
       "__type__": "cc.Rect",
       "x": 0,
@@ -478,7 +478,7 @@
     "_enabled": true,
     "__prefab": null,
     "_projection": 0,
-    "_priority": 1073741824,
+    "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
     "_orthoHeight": 640,
