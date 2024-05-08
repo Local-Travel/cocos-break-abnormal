@@ -5,7 +5,7 @@
   "__editorExtras__": {},
   "_native": "",
   "_effectAsset": {
-    "__uuid__": "8be2576c-a219-404e-bef1-f7bbfc390995",
+    "__uuid__": "23efe885-b6ff-476e-a86f-eec68152077d",
     "__expectedType__": "cc.EffectAsset"
   },
   "_techIdx": 0,
@@ -27,13 +27,11 @@
   ],
   "_props": [
     {
-      "wh_ratio": 1,
-      "blur": 0.1,
-      "radius": 0.3,
-      "center": {
-        "__type__": "cc.Vec2",
-        "x": 0.1,
-        "y": 0.5
+      "radius": 0.05,
+      "progress": 1,
+      "tex": {
+        "__uuid__": "15f45b31-a811-441a-b81f-3f7c8ca7243f@6c48a",
+        "__expectedType__": "cc.Texture2D"
       }
     }
   ]
