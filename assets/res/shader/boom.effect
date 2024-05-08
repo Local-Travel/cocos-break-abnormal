@@ -1,0 +1,58 @@
+// Effect Syntax Guide: https://docs.cocos.com/creator/manual/zh/shader/index.html
+
+CCEffect %{
+  techniques:
+  - name: opaque
+    passes:
+    - vert: legacy/main-functions/general-vs:vert # builtin header
+      frag: unlit-fs:frag
+      properties: &props
+        mainTexture:    { value: white }
+        cells:           { value: [1.0, 1.0] }
+        fps:             { value: 1.0 }
+        mainColor:      { value: [1, 1, 1, 1], editor: { type: color } }
+  - name: transparent
+    passes:
+    - vert: general-vs:vert # builtin header
+      frag: unlit-fs:frag
+      blendState:
+        targets:
+        - blend: true
+          blendSrc: src_alpha
+          blendDst: one_minus_src_alpha
+          blendSrcAlpha: src_alpha
+          blendDstAlpha: one_minus_src_alpha
+      properties: *props
+}%
+
+CCProgram unlit-fs %{
+  precision highp float;
+  #include <legacy/output>
+  #include <legacy/fog-fs>
+
+  in vec2 v_uv;
+  in vec3 v_position;
+
+  uniform sampler2D mainTexture;
+
+  uniform Constant {
+    vec4 mainColor;
+    vec2 cells;
+    float fps;
+  };
+
+  vec4 frag () {
+    // 通过时间乘以帧率得到一个索引值，用于滚动特效
+    float index = floor(cc_time.x * fps);
+    // 提取单元的行和列
+    float row = cells.x;
+    float col = cells.x;
+    // 取模运算计算偏移量，用于纹理上产生滚动效果
+    vec2 offset = vec2(mod(index,col)/col, floor(index/col)/row);
+    // 使用纹理采样器从纹理中提取颜色，乘以mainColor得到最终颜色
+    vec4 color = mainColor * texture(mainTexture, v_uv / cells.yx + offset);
+    // 应用雾效果，根据位置给定的颜色计算雾的强度，并将雾强度应用于最终颜色值
+    CC_APPLY_FOG(color, v_position);
+    return CCFragOutput(color);
+  }
+}%
