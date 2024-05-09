@@ -6,7 +6,9 @@ import { DialogManager } from "../dialog/DialogManager";
 
 enum EVENT_TYPE {
   /** 倒三角页面重新设置 */ 
-  PAGE_INVERT_TRIANGLE_RESET = 'PAGE_INVERT_TRIANGLE_RESET',
+  PAGE_MOVE_RESET = 'PAGE_MOVE_RESET',
+  /** 随意移动页面重新设置 */
+  PAGE_MOVE_FREE_RESET = 'PAGE_MOVE_FREE_RESET',
 }
 
 enum MODEL_SHAPE {
@@ -16,6 +18,8 @@ enum MODEL_SHAPE {
     SQUARE = 'square',
     /** 三角形 */
     TRIANGLE = 'triangle',
+    /** 方形边框 */
+    BORDER_RECT = 'border-rect',
 }
 
 const SKIN_STYLE = {
@@ -23,15 +27,15 @@ const SKIN_STYLE = {
     /** 皮肤数量 */
     count: 1,
     /** sprite路径前缀 */
-    spriteDir: 'texture/circle/style1/',
+    spriteDir: 'texture/shape/',
     /** 皮肤名前缀 */
-    namePrefix: 'skin'
+    namePrefix: ''
   },
   Style2: {
     /** 皮肤数量 */
     count: 1,
     /** sprite路径前缀 */
-    spriteDir: 'texture/circle/style2/',
+    spriteDir: 'texture/shape/',
     /** 皮肤名前缀 */
     namePrefix: 'skin'
   },

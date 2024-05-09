@@ -4,13 +4,13 @@ import { DragData } from '../data/DragData';
 const { ccclass, property } = _decorator;
 
 /** 倒三角页面 */
-@ccclass('PageInvertTriangle')
-export class PageInvertTriangle extends Component {
+@ccclass('PageMove')
+export class PageMove extends Component {
     @property(Node)
     taskLabel: Node = null;
 
     protected onLoad(): void {
-        director.on(Constant.EVENT_TYPE.PAGE_INVERT_TRIANGLE_RESET, this.init, this);
+        director.on(Constant.EVENT_TYPE.PAGE_MOVE_RESET, this.init, this);
     }
 
     start() {
@@ -23,11 +23,11 @@ export class PageInvertTriangle extends Component {
 
     protected onDestroy(): void {
         // 移除监听
-        director.off(Constant.EVENT_TYPE.PAGE_INVERT_TRIANGLE_RESET, this.init, this);
+        director.off(Constant.EVENT_TYPE.PAGE_MOVE_RESET, this.init, this);
     }
 
     init() {
-        const { data } = DragData.getDragData(0);
+        const { data } = DragData.getDragData(2);
         Constant.dragManager.init(data);
 
         this.setTitle(data.name);

@@ -1,13 +1,11 @@
-import { _decorator, Color, Component, director, EventTouch, Graphics, misc, Node, v2, v3, Vec2, Vec3 } from 'cc';
-import { Drag } from './Drag';
-import { Constant } from '../util/Constant';
+import { _decorator, Color, Component, director, EventTouch, find, Graphics, misc, Node, v2, v3, Vec2, Vec3 } from 'cc';
+import { Drag } from '../Drag';
+import { Constant } from '../../util/Constant';
+import { Utils } from '../../util/Utils';
 const { ccclass, property } = _decorator;
 
-@ccclass('DragControl')
-export class DragControl extends Component {
-
-    @property(Node)
-    drawColorNode: Node = null;
+@ccclass('TriangleControl')
+export class TriangleControl extends Component {
 
     // 变动的列表
     private _changeList: any[] = [];
@@ -15,6 +13,7 @@ export class DragControl extends Component {
     private _answerList: any[] = [];
 
     private _startPos: Vec3 = new Vec3();
+    private _startList: any[] = [];
 
     private _dragCount: number = 0;
     private _index: number = -1;
@@ -23,7 +22,6 @@ export class DragControl extends Component {
     private _g: Graphics = null;
 
     start() {
-        this._g = this.drawColorNode.getComponent(Graphics);
         this._isEnd = false;
     }
 
@@ -31,36 +29,48 @@ export class DragControl extends Component {
         
     }
 
+    resetData() {
+        this._dragCount = 0;
+        this._startPos = null;
+        this._changeList = [];
+        this._answerList = [];
+        this._isEnd = false;
+    }
+
     handleTouchStart(event: EventTouch, drag: Drag) {
         // const pos = event.getLocation();
         if (this._isEnd) return;
         this._startPos = drag.getPosition().clone();
-        this._g.clear();
+
+        this._startList = this.getChangeIndexByPos(this._startPos);
+        
+        this._g && this._g.clear();
     }
 
     handleTouchMove(event: EventTouch, drag: Drag) {
         if (this._isEnd) return;
         const pos = event.getLocation();
         const nPos = drag.getNodeSpacePosition(pos);
-        this._g.clear();
+        this._g && this._g.clear();
         this._index = -1;
         // console.log(pos, nPos);
         if (!this.checkOutOfBounds(nPos, drag)) {
             drag.setPosition(nPos);
 
-            const index = this.getChangeIndexByPos(nPos);
+            const [index, row] = this.getChangeIndexByPos(nPos);
             if (index < 0) return;
 
-            this.drawCircle(index);
+            if (this.drawShapeDotLine(index, row, drag)) {
+                this._index = index;
+            }
         }
     }
 
     handleTouchEnd(event: EventTouch, drag: Drag) {
         if (this._isEnd) return;
         // const pos = event.getLocation();
-        this._g.clear();
-
-        const startIndex = this.getChangeIndexByPos(this._startPos);
+        this._g && this._g.clear();
+        const startIndex = this._startList[0];
 
         if (startIndex < 0 || this._index < 0 || startIndex === this._index) {
             // 还原位置
@@ -74,8 +84,9 @@ export class DragControl extends Component {
             drag.setPosition(pos);
             const val = Constant.dragManager.getDragListValue(startIndex);
             if (val && val.length > 0) {
-                Constant.dragManager.setDragListValue(this._index, val[2]);
-                Constant.dragManager.setDragListValue(startIndex, null);
+                const k1 = Constant.dragManager.setDragListValue(this._index, val[2]);
+                const k2 = Constant.dragManager.setDragListValue(startIndex, null);
+                console.log('k1', k1, k2)
             }
             
             const k = drag.getDragNum();
@@ -94,7 +105,7 @@ export class DragControl extends Component {
             } else {
                 console.log('失败');
                 Constant.dialogManager.showTipPic('wrong', 100, pos, () => {
-                    director.emit(Constant.EVENT_TYPE.PAGE_INVERT_TRIANGLE_RESET);
+                    director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
                 });
             }
         }
@@ -103,25 +114,18 @@ export class DragControl extends Component {
     /** 是否超出边界 */
     checkOutOfBounds(pos: Vec3, drag: Drag) {
         const parentBox = drag.getParentRectBox();
-        const { x, y, width, height } = parentBox;
-        const { x: dx, y: dy } = pos;
-        // console.log(pos, parentBox);
-        if (dx < x || dx > x + width || dy < y || dy > y + height) {
-            console.log('超出边界');
-            return true;
-        }
-        return false;
+        return Utils.checkOutOfBounds(pos, parentBox);
     }
 
-    /** 修改变动的列表 */
+    /** 获取变动的列表索引值 */
     getChangeIndexByPos(pos: Vec3) {
         const [row, col] = Constant.dragManager.convertPosToRowCol(v3(pos.x, pos.y, 0));
-        if (row < 0 || col < 0 || row >= Constant.dragManager.colCount || col >= Constant.dragManager.colCount) {
+        if (row < 0 || col < 0 || row >= Constant.dragManager.rowCount || col >= Constant.dragManager.colCount) {
             console.log('转换超出范围', row, col);
-            return -1;
+            return [-1, row, col];
         }
         const index = Constant.dragManager.getIndex(row, col);
-        return index;
+        return [index, row, col];
     }
 
     checkResult() {
@@ -134,29 +138,29 @@ export class DragControl extends Component {
         return Constant.dragManager.checkIsSameList(this._answerList);
     }
 
-    drawCircle(index: number) {
+    drawShapeDotLine(index: number, row: number, drag: Drag) {
         const pos = this.getEmptyIndexPos(index);
-        if (pos) {
-            const certer = v2(pos.x, pos.y);
-            const spaceAngle = 20;
-            const deltaAngle = 20;
-            const angle = spaceAngle + deltaAngle;
+        if (!pos) return false;
+        const shape = Constant.dragManager.shape;
+        // const radius = Constant.dragManager.size / 2;
+        // Utils.drawDotCircle(this._g, pos, radius, 5, Color.RED);
+        const w = Constant.dragManager.shapeWidth;
+        const h = Constant.dragManager.shapeHeight;
+        if (Constant.MODEL_SHAPE.CIRCLE === shape) {
             const radius = Constant.dragManager.size / 2;
-
-            this._g.lineWidth = 5;
-            this._g.strokeColor = Color.RED;
-            for(let i = 0; i < 360; i+= angle) {
-                const sR = misc.degreesToRadians(i);
-                const eR = misc.degreesToRadians(i + deltaAngle);
-                this._g.arc(certer.x, certer.y, radius, sR, eR, true);
-                this._g.stroke();
+            Utils.drawDotCircle(this._g, pos, radius, 5, Color.RED);
+        } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
+            const startRow = this._startList[1];
+            if (row % 2 !== startRow % 2) return false;// 目标和拖动的，对应的奇偶数要相同
+            if (row % 2) {
+                Utils.drawDotRect(this._g, pos, h, w, 3, Color.RED);
+            } else {
+                Utils.drawDotRect(this._g, pos, w, h, 3, Color.RED);
             }
-
-            // console.log('画圆', index);
-            this._index = index;
         } else {
-            this._index = -1;
+            Utils.drawDotRect(this._g, pos, w, h, 3, Color.RED);
         }
+        return true;
     }
 
     getEmptyIndexPos(index: number) {
@@ -167,22 +171,13 @@ export class DragControl extends Component {
         }
         return null;
     }
-    
-
-    setChangeList(list: any[]) {
-        this._changeList = list;
-    }
 
     setAnswerList(list: any[]) {
         this._answerList = list;
     }
 
-    resetData() {
-        this._dragCount = 0;
-        this._startPos = null;
-        this._changeList = [];
-        this._answerList = [];
-        this._isEnd = false;
+    setGraphics(g: Graphics) {
+        this._g = g;
     }
 }
 

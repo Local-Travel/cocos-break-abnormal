@@ -1,7 +1,7 @@
 [
   {
     "__type__": "cc.Prefab",
-    "_name": "drag-pop",
+    "_name": "drag",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_native": "",
@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "drag-pop",
+    "_name": "drag",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
@@ -166,10 +166,7 @@
       "b": 255,
       "a": 255
     },
-    "_spriteFrame": {
-      "__uuid__": "6c1fab78-c32c-4733-812d-b3b9e25f596a@f9941",
-      "__expectedType__": "cc.SpriteFrame"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_fillType": 0,
     "_sizeMode": 0,
@@ -303,6 +300,7 @@
       "__id__": 0
     },
     "fileId": "90/wj1tdJMeoMZ1Kh+llUQ",
+    "instance": null,
     "targetOverrides": null
   }
 ]

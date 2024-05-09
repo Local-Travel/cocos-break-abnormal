@@ -64,6 +64,14 @@ export class Drag extends Component {
         return this._dragNum;
     }
 
+    setRotation(euler: Vec3 = new Vec3(0, 0, -90)) {
+        this.node.setRotationFromEuler(euler);
+    }
+
+    getRotation() {
+        return this.node.rotation;
+    }
+
     resetPosition() {
         this.node.setPosition(this._oldPos);
     }
