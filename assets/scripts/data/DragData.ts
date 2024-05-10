@@ -1,7 +1,14 @@
 
+interface IPosObject {
+    x: number;
+    y: number;
+    z: number;
+    /** 误差范围 */
+    distance?: number;
+}
 interface IPosAnswer {
     /** 位置索引：[位置，旋转] */
-    [index: string]: any[];
+    [index: string]: IPosObject[];
 }
 interface IDragData {
     /** 皮肤个数 */
@@ -16,8 +23,8 @@ interface IDragData {
     dragCount: number;
     /** 同一位置是否允许重复覆盖 */
     isRepeat: boolean;
-    /** 拖拽位置是否全部显示 */
-    isDragLine: boolean;
+    /** 拖拽位置绘制的类型，空表示不绘制，对应Constant.DRAW_LINE_TYOPE */
+    dragLineType: string;
     /** 宽高比例，以宽为基准 */
     whRatio: number;
     /** 列数 */
@@ -34,12 +41,14 @@ interface IDragData {
     list: number[];
     /** 固定拖拽的答案列表 */
     answer: number[];
+    /** 自由拖拽的位置对象，以列表中大于0的数据index索引为key */
+    posFree?: IPosAnswer;
     /** 自由拖拽的答案对象，以列表中大于0的数据index索引为key，包含位置和旋转 */
-    posAnswer?: IPosAnswer;
+    posFreeAnswer?: IPosAnswer;
 }
 
 export class DragData {
-    /** 获取拖动数据 */
+    /** 获取固定拖动数据 */
     static getDragData(level: number) {
         // list中的code代表皮肤
         const dragList: IDragData[] = [
@@ -50,7 +59,7 @@ export class DragData {
                 limitTime: 180,
                 dragCount: 3,
                 isRepeat: false,
-                isDragLine: false,
+                dragLineType: '',
                 whRatio: 1,
                 col: 8,
                 shape: 'circle',
@@ -85,7 +94,7 @@ export class DragData {
                 dragCount: 2,
                 limitTime: 180,
                 isRepeat: false,
-                isDragLine: false,
+                dragLineType: 'full',
                 whRatio: 0.2,
                 col: 6,
                 shape: 'border-rect',
@@ -93,6 +102,8 @@ export class DragData {
                 name: '移动2根火柴变成4个相同正方形',
                 desc: '',
                 list: [
+                    0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
                     0, 0, 2, 2, 2, 0,
                     0, 2, 2, 2, 2, 0,
                     0, 0, 2, 2, 2, 0,
@@ -100,8 +111,12 @@ export class DragData {
                     0, 0, 2, 0, 0, 0,
                     0, 2, 2, 0, 0, 0,
                     0, 0, 2, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
                 ],
                 answer: [
+                    0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
                     0, 0, 2, 0, 2, 0,
                     0, 2, 2, 2, 2, 0,
                     0, 0, 2, 2, 2, 0,
@@ -109,6 +124,8 @@ export class DragData {
                     0, 0, 2, 2, 0, 0,
                     0, 2, 2, 0, 0, 0,
                     0, 0, 2, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
                 ],
             },
             {
@@ -118,7 +135,7 @@ export class DragData {
                 dragCount: 4,
                 limitTime: 180,
                 isRepeat: true,
-                isDragLine: false,
+                dragLineType: '',
                 whRatio: 1,
                 col: 5,
                 shape: 'squre',
@@ -140,14 +157,32 @@ export class DragData {
                     0, 0, 0, 0, 0, 
                 ],
             },
+        ]
+
+        let data = dragList[0]
+        if (level <= dragList.length && level > 0) {
+            data = dragList[level - 1]
+        }
+
+        return {
+            col: data.col,
+            list: data.list,
+            data,
+        }
+    }
+
+    /** 获取自由拖动数据 */
+    static getFreeMoveData(level: number) {
+        // list中的code代表皮肤
+        const dragList: IDragData[] = [
             {
                 skinCount: 1,
                 targetCount: 0,
                 targetIcon: 0,
-                dragCount: 2,
+                dragCount: 1,
                 limitTime: 60,
                 isRepeat: false,
-                isDragLine: false,
+                dragLineType: 'full',
                 whRatio: 0.2,
                 col: 6,
                 shape: 'border-rect',
@@ -162,8 +197,14 @@ export class DragData {
                     0, 0, 0, 0, 0, 0,
                 ],
                 answer: [],
-                posAnswer: {
-                    0: [{ x: 0, y: 0, z: 0 }],
+                posFree: {
+                    0: [{ x: -56, y: 208, z: 0 }],
+                    1: [{ x: -100, y: 158, z: 0 }],
+                    2: [{ x: -14, y: 158, z: 0 }],
+                    3: [{ x: -56, y: 108, z: 0 }],
+                },
+                posFreeAnswer: {
+                    2: [{ x: -2, y: 158, z: 0, distance: 3 }],
                 },
             },
         ]

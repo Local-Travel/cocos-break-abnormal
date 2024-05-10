@@ -35,9 +35,13 @@ export class MoveFreeControl extends Component {
     }
 
     handleTouchStart(event: EventTouch, drag: Drag) {
-        // const pos = event.getLocation();
         if (this._isEnd) return;
+        const pos = event.getLocation();
         this._startPos = drag.getPosition().clone();
+
+        const nPos = drag.getNodeSpacePosition(pos);
+        // console.log('this._startPos', this._startPos, nPos);
+        
     }
 
     handleTouchMove(event: EventTouch, drag: Drag) {
@@ -51,6 +55,7 @@ export class MoveFreeControl extends Component {
 
             this._movePos = nPos;
         }
+        // console.log('this._movePos', this._movePos)
     }
 
     handleTouchEnd(event: EventTouch, drag: Drag) {
@@ -62,15 +67,21 @@ export class MoveFreeControl extends Component {
         }
         drag.setDragNum(k + 1);
 
-        const specifyPos = drag.getSpecifyPosition();
-        if (specifyPos) {// 说明是拖拽目标
-            const mPos = this._movePos.clone();
-            if (mPos.subtract(specifyPos).length() <= Constant.RANGE_DISTANCE) {
-                drag.setIsSpecifyPos(true);
-            } else {
-                drag.setIsSpecifyPos(false);
-            }
-        }
+        if (!this._movePos) return;
+
+        // const specifyPos = drag.getSpecifyPosition();
+        // if (specifyPos) {// 说明是拖拽目标
+        //     const mPos = this._movePos.clone();
+        //     const distance = mPos.subtract(specifyPos).length();
+        //     console.log('this._movePos', this._movePos, specifyPos, distance);
+        //     // 距离判断
+        //     if (distance <= Constant.RANGE_DISTANCE) {
+        //         // TODO: 角度判断
+        //         drag.setIsSpecifyPos(true);
+        //     } else {
+        //         drag.setIsSpecifyPos(false);
+        //     }
+        // }
 
         this.checkResult(this._movePos);
     }
@@ -78,13 +89,15 @@ export class MoveFreeControl extends Component {
     checkResult(pos: Vec3) {
         let endFlag = true;
         const maxDragCount = Constant.dragManager.dragCount;
-        if (maxDragCount > 0 && this._dragCount < maxDragCount) return
+        if (this._targetList.length <= 0 || maxDragCount > 0 && this._dragCount < maxDragCount) return
 
-        const res = this._targetList.every((item) => item.getIsSpecifyPos());
+        const res = this._targetList.every((item) => {
+            return item && item.getSpecifySuccess()
+        });
         if (res) {
             console.log('成功');
             Constant.dialogManager.showTipPic('right', 100, pos, () => {
-                director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
+                director.emit(Constant.EVENT_TYPE.PAGE_MOVE_FREE_RESET);
             });
             // TODO: 弹框
         } else {
@@ -94,7 +107,7 @@ export class MoveFreeControl extends Component {
                 console.log('失败');
                 // TODO: 弹框
                 Constant.dialogManager.showTipPic('wrong', 100, pos, () => {
-                    director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
+                    director.emit(Constant.EVENT_TYPE.PAGE_MOVE_FREE_RESET);
                 });
             }
         }

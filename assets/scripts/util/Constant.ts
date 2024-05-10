@@ -22,6 +22,14 @@ enum MODEL_SHAPE {
     BORDER_RECT = 'border-rect',
 }
 
+// 绘制类型
+enum DRAW_LINE_TYOPE {
+  /** 虚线 */
+  DOTLINE = 'dotline',
+  /** 实心 */
+  FULL = 'full',
+}
+
 const SKIN_STYLE = {
   Style1: {
     /** 皮肤数量 */
@@ -90,5 +98,6 @@ export class Constant {
   static PROPS_NAME = PROPS_NAME;// 道具名称
 
   // drag
-  static RANGE_DISTANCE = 0.5;// 拖拽位置的误差范围
+  static RANGE_DISTANCE = 5;// 拖拽位置的误差范围
+  static DRAW_LINE_TYOPE = DRAW_LINE_TYOPE;// 绘制类型
 }

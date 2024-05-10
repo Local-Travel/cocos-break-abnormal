@@ -85,6 +85,14 @@ export class Utils {
         }
     }
 
+    /** 画一个实体圆 */
+    static drawFullCircle(g: Graphics, pos: Vec3, radius: number, lineWidth: number, fillColor: Color) {
+        g.lineWidth = lineWidth;
+        g.fillColor = fillColor;
+        g.circle(pos.x, pos.y, radius);
+        g.fill();
+    }
+
     /** 画一个虚线矩形 */
     static drawDotRect(g: Graphics, pos: Vec3, width: number, height: number, lineWidth: number, strokeColor: Color) {
         const begin = new Vec2(pos.x - width / 2, pos.y - height / 2);
@@ -117,6 +125,16 @@ export class Utils {
             i += (lineLen + spaceLen);
             g.stroke();
         }
+    }
+
+    /** 画一个实体矩形 */
+    static drawFullRect(g: Graphics, pos: Vec3, width: number, height: number, lineWidth: number, fillColor: Color) {
+        g.lineWidth = lineWidth;
+        g.fillColor = fillColor;
+        
+        const begin = new Vec2(pos.x - width / 2, pos.y - height / 2);
+        g.rect(begin.x, begin.y, width, height);
+        g.fill();
     }
 
     /**

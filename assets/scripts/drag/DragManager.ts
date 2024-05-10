@@ -37,6 +37,7 @@ export class DragManager extends Component {
     private _skinNodeName: string = 'skin';
     private _g: Graphics = null;
     private _skinType: string = '';
+    private _isReduceSize: boolean = false;
 
     __preload () {
         Constant.dragManager = this
@@ -78,6 +79,7 @@ export class DragManager extends Component {
         this.shapeWidth = 0;
         this.shapeHeight = 0;
         this._dragSkin = Constant.SKIN_STYLE[this._skinType] || {}
+        this._isReduceSize = false;
 
         this.clearDragList();
         this.dragControl && this.dragControl.resetData();
@@ -88,7 +90,7 @@ export class DragManager extends Component {
         this.resetData();
 
         if (data) {
-            const { list, answer, col, whRatio, isDragLine, shape, dragCount, isRepeat } = data || {};
+            const { list, answer, posFree, posFreeAnswer, col, whRatio, dragLineType, shape, dragCount, isRepeat } = data || {};
             const c = col > 0 ? col : 1;
             this.colCount = c;
             this.dragCount = dragCount;
@@ -99,25 +101,33 @@ export class DragManager extends Component {
             if (answer && answer.length) {
                 this.dragControl && this.dragControl.setAnswerList(answer);
             }
-            this.batchGenerateDrag(list, c, whRatio, isDragLine, shape);
+            const blockShape = shape || Constant.MODEL_SHAPE.SQUARE;
+            this.batchGenerateDrag(list, c, whRatio, dragLineType, blockShape, posFree, posFreeAnswer);
         }
     }
 
-    batchGenerateDrag(list: number[], col: number, whRatio: number, isDragLine: boolean, shape: string = Constant.MODEL_SHAPE.SQUARE) {
+    batchGenerateDrag(list: number[], col: number, whRatio: number, dragLineType: string, shape: string, posFree: any, posFreeAnswer: any) {
         const row = Math.ceil(list.length / col);
         const m_width = this.width / col;
         const m_height = m_width * whRatio;
         const size = Math.max(m_width, m_height);
         // const triangleList = [];
+        const isBorderShape = Constant.MODEL_SHAPE.BORDER_RECT === shape;
         this.size = size;
         this.rowCount = row;
-        this.shapeWidth = m_width;
+        this.shapeWidth = isBorderShape ? m_width - m_height : m_width;
         this.shapeHeight = m_height;
 
+        const isFreeMoveMode = posFree && posFreeAnswer;
+        const freeMoveTargetList = [];
+        let freeMovePos;
+        let freeMoveIndex = 0;
+        
         this.clearLine();
         for(let i = 0; i < row; i++) {
-            const isBorder = i % 2 && Constant.MODEL_SHAPE.BORDER_RECT === shape;
+            const isBorder = i % 2 && isBorderShape;
             for(let j = 0; j < col; j++) {
+                // 获取位置信息
                 let pos;
                 const index = this.getIndex(i, j);
                 if (Constant.MODEL_SHAPE.CIRCLE === shape) {
@@ -127,29 +137,71 @@ export class DragManager extends Component {
                 } else {
                     pos = Utils.convertRowColToPosRect(i, j, size, this.startX, this.startY)
                 }
-                
-                if (list[index]) {
-                    const drag = this.generateDrag(pos, m_width, m_height, list[index]);
-                    this._dragList.push([pos, 1, drag]);
-                    // triangleList[index] = 1;
-                    if (isBorder) {
-                        drag.setRotation();
+
+                // 设置dragList
+                if (isFreeMoveMode) {// 自由移动模式
+                    freeMovePos = pos;
+                    if (list[index]) {
+                        const iPos = posFree && posFree[freeMoveIndex];
+                        freeMovePos = iPos && iPos.length ? iPos[0] : pos;
+                        const drag = this.generateDrag(freeMovePos, this.shapeWidth, this.shapeHeight, list[index]);
+                        this._dragList.push([freeMovePos, 1, drag]);
+                        
+                        if (isBorder) {
+                            // 设置旋转角度
+                            const euler = iPos && iPos.length > 1 ? iPos[1] : null;
+                            if (euler) {
+                                drag.setRotation(new Vec3(euler.x, euler.y, euler.z));
+                            } else {
+                                drag.setRotation();
+                            }
+                        }
+
+                        const freeAnswer = posFreeAnswer && posFreeAnswer[freeMoveIndex];
+                        if (freeAnswer && freeAnswer.length) {
+                            // console.log('freeAnswer', freeAnswer, drag);
+                            drag.setSpecifyPosition(freeAnswer[0]);
+                            if (freeAnswer.length > 1) {
+                                drag.setSpecifyRotation(freeAnswer[1]);
+                            }
+                            freeMoveTargetList.push(drag);
+                        }
+
+                        // console.log('drag', freeMoveIndex, drag);
+
+                        freeMoveIndex++;
+                    } else {
+                        this._dragList.push([freeMovePos, 0, null]);
                     }
                 } else {
-                    this._dragList.push([pos, 0, null]);
-                    // triangleList[index] = 0;
-                }
-
-                if (isDragLine) {
-                    if (isBorder) {
-                        this.drawLine(pos.clone(), m_height, m_width, shape);
+                    if (list[index]) {
+                        const drag = this.generateDrag(pos, this.shapeWidth, this.shapeHeight, list[index]);
+                        this._dragList.push([pos, 1, drag]);
+                        if (isBorder) {
+                            drag.setRotation();
+                        }
                     } else {
-                        this.drawLine(pos.clone(), m_width, m_height, shape);
+                        this._dragList.push([pos, 0, null]);
+                    }
+                }
+                
+                // 划线
+                if (dragLineType) {
+                    if (isBorder) {
+                        this.drawLine(pos.clone(), this.shapeHeight, this.shapeWidth, dragLineType, shape);
+                    } else {
+                        if (isBorderShape && i % 2 === 0 && j === 0)  continue;
+                        this.drawLine(pos.clone(), this.shapeWidth, this.shapeHeight, dragLineType, shape);
                     }
                 }
             }
         }
+
+        if (isFreeMoveMode && freeMoveTargetList.length > 0) {
+            this.dragControl && this.dragControl.setAnswerList(freeMoveTargetList);
+        }
     }
+
 
     generateDrag(pos: Vec3, width: number, height: number, skinCode: number = 0) {
         // 生成拖拽节点
@@ -290,12 +342,21 @@ export class DragManager extends Component {
         this._dragList = [];
     }
 
-    drawLine(pos: Vec3, width: number, height: number, shape: string = Constant.MODEL_SHAPE.SQUARE) {
-        if (!this._g) return;
+    drawLine(pos: Vec3, width: number, height: number, dragLineType: string, shape: string = Constant.MODEL_SHAPE.SQUARE) {
+        if (!this._g || !dragLineType) return;
         if (Constant.MODEL_SHAPE.CIRCLE === shape) {
-            Utils.drawDotCircle(this._g, pos, this.size / 2, 2, Color.GRAY);
+            if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
+                Utils.drawDotCircle(this._g, pos, this.size / 2, 3, new Color(255, 255, 255, 80));
+            } else {
+                Utils.drawFullCircle(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+            }
+            
         } else {
-            Utils.drawDotRect(this._g, pos, width, height, 2, Color.GRAY);
+            if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
+                Utils.drawDotRect(this._g, pos, width, height, 3, new Color(255, 255, 255, 80));
+            } else {
+                Utils.drawFullRect(this._g, pos, width, height, 2, new Color(255, 255, 255, 60));
+            }
         }
     }
 

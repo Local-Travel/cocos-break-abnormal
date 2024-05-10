@@ -9,6 +9,9 @@ export class Drag extends Component {
     private _oldPos: Vec3 = null; // 最原始的位置
     private _dragNum: number = 0; // 拖拽次数
     private _specifyPos: Vec3 = null; // 指定位置
+    private _specifyRotation: Vec3 = null; // 指定旋转
+    private _specifyPosDistance: number = 0; // 指定位置误差范围
+    private _specifyRotationDistance: number = 0; // 指定旋转误差范围
     private _isSpecifyPos: boolean = false; // 是否到达指定位置
     
     onLoad() {
@@ -86,12 +89,38 @@ export class Drag extends Component {
         return this.node.position;
     }
 
-    setSpecifyPosition(pos: Vec3) {
-        this._specifyPos = pos;
+    setSpecifyPosition(obj: any) {
+        const { x, y, z, distance } = obj || {};
+        this._specifyPos = new Vec3(x, y, z);
+        this._specifyPosDistance = distance;
     }
 
     getSpecifyPosition() {
         return this._specifyPos;
+    }
+
+    // 判断是否到达指定位置和旋转的角度
+    getSpecifySuccess() {
+        console.log('angle',this.getRotation().z, this.node.eulerAngles, this._specifyPos);
+        if (!this._specifyPos) return false;
+        const pos = this.getPosition();
+        const posDistance = pos.clone().subtract(this._specifyPos).length();
+        // console.log('posDistance', posDistance, this._specifyPosDistance)
+        if (posDistance <= this._specifyPosDistance) {
+            return true;
+        }
+        return false;
+    }
+    
+
+    setSpecifyRotation(obj: any) {
+        const { x, y, z, distance } = obj || {};
+        this._specifyRotation = new Vec3(x, y, z);
+        this._specifyRotationDistance = distance;
+    }
+
+    getSpecifyRotation() {
+        return this._specifyRotation;
     }
 
     setIsSpecifyPos(isSpecifyPos: boolean) {
@@ -127,7 +156,7 @@ export class Drag extends Component {
         return this.node.parent.getComponent(UITransform).convertToNodeSpaceAR(p);
     }
 
-    getRelativePosition(pos: Vec2) {
+    getParentRelativePosition(pos: Vec2) {
         const p = new Vec3(pos.x, pos.y, 0)
         const parentPos = this.node.parent.position
         return new Vec3(parentPos.x + p.x, parentPos.y + p.y, 0);
