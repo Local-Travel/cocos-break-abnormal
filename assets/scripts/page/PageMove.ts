@@ -33,7 +33,7 @@ export class PageMove extends Component {
     }
 
     init() {
-        const { data } = DragData.getDragData(2);
+        const { data } = DragData.getDragData(5);
         Constant.dragManager.init(data);
         const { limitTime = 180 } = data || {};
 

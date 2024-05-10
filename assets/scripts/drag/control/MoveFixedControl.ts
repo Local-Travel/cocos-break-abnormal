@@ -153,6 +153,9 @@ export class MoveFixedControl extends Component {
         if (Constant.MODEL_SHAPE.CIRCLE === shape) {
             const radius = Constant.dragManager.size / 2;
             Utils.drawDotCircle(this._g, pos, radius, 5, Color.RED);
+        } if (Constant.MODEL_SHAPE.HEXAGON === shape) {
+            const radius = Constant.dragManager.size / 2;
+            Utils.drawFullHexagon(this._g, pos, radius, 2, new Color(255, 0, 0, 200));
         } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
             const startRow = this._startList[1];
             if (row % 2 !== startRow % 2) return false;// 目标和拖动的，对应的奇偶数要相同

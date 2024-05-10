@@ -44,6 +44,25 @@ export class Utils {
         return [row, col];
     }
 
+    /** 根据行列转换位置-六边形，左上角起始点 */
+    static convertRowColToPosHexagon(row: number, col: number, size: number, startX: number, startY: number): Vec3 {
+        const radius = size / 2;
+        const w = 1 / 2 * radius * Math.sqrt(3);
+        const x = startX + col * w * 2 + w * (row % 2 + 1);
+        const y = startY - (row * radius * 1.5);
+        return new Vec3(x, y, 0);
+    }
+
+    /** 根据位置转换行列-六边形，左上角起始点 */
+    static convertPosToRowColHexagon(pos: Vec3, size: number, startX: number, startY: number): number[] {
+        const radius = size / 2;
+        const w = 1 / 2 * radius * Math.sqrt(3);
+        const row = Math.round((startY - pos.y) / (radius * 1.5));
+        // const rr = row < 0 ? 0 : row;
+        const col = Math.round((pos.x - startX - w * (row % 2 + 1)) / (2 * w));
+        return [row, col];
+    }
+
     /** 是否超出边界 */
     static checkOutOfBounds(pos: Vec3, box: math.Rect, s: number = 0) {
         const { x, y, width, height } = box;
@@ -105,6 +124,7 @@ export class Utils {
         g.strokeColor = strokeColor;
         // 横向
         for(let i = 0; i < width; ) {
+            if(i + lineLen > width) break;
             g.moveTo(begin.x + i, begin.y);
             g.lineTo(begin.x + i + lineLen, begin.y);
             
@@ -116,6 +136,7 @@ export class Utils {
         }
         // 纵向
         for(let i = 0; i < height; ) {
+            if(i + lineLen > height) break;
             g.moveTo(begin.x, begin.y + i);
             g.lineTo(begin.x, begin.y + i + lineLen);
             
@@ -134,6 +155,31 @@ export class Utils {
         
         const begin = new Vec2(pos.x - width / 2, pos.y - height / 2);
         g.rect(begin.x, begin.y, width, height);
+        g.fill();
+    }
+
+    /** 画一个实体六边形 */
+    static drawFullHexagon(g: Graphics, pos: Vec3, radius: number, lineWidth: number, fillColor: Color) {
+        g.lineWidth = lineWidth;
+        g.fillColor = fillColor;
+        g.strokeColor = new Color(0, 0, 0, 150);
+        const begin = new Vec2(pos.x, pos.y);
+        const w = 1 / 2 * radius * Math.sqrt(3);        
+        
+        // 左上
+        g.moveTo(begin.x - w, begin.y + 1 / 2 * radius);
+        // 上
+        g.lineTo(begin.x, begin.y + radius);
+        // 右上
+        g.lineTo(begin.x + w, begin.y + 1 / 2 * radius);
+        // 右下
+        g.lineTo(begin.x + w, begin.y - 1 / 2 * radius);
+        // 下
+        g.lineTo(begin.x, begin.y - radius);
+        // 左下
+        g.lineTo(begin.x - w, begin.y - 1 / 2 * radius);
+
+        g.stroke();
         g.fill();
     }
 

@@ -18,6 +18,8 @@ enum MODEL_SHAPE {
     SQUARE = 'square',
     /** 三角形 */
     TRIANGLE = 'triangle',
+    /** 六边形 */
+    HEXAGON = 'hexagon',
     /** 方形边框 */
     BORDER_RECT = 'border-rect',
 }

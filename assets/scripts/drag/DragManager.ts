@@ -134,6 +134,8 @@ export class DragManager extends Component {
                     pos = Utils.convertRowColToPosCircle(i, j, size, this.startX, this.startY)
                 } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
                     pos = Utils.convertRowColToPosRectBorder(i, j, size, this.startX, this.startY)
+                } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
+                    pos = Utils.convertRowColToPosHexagon(i, j, size, this.startX, this.startY)
                 } else {
                     pos = Utils.convertRowColToPosRect(i, j, size, this.startX, this.startY)
                 }
@@ -256,6 +258,8 @@ export class DragManager extends Component {
             return Utils.convertPosToRowColCircle(pos, this.size, this.startX, this.startY)
         } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
             return Utils.convertPosToRowColRectBorder(pos, this.size, this.startX, this.startY)
+        } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
+            return Utils.convertPosToRowColHexagon(pos, this.size, this.startX, this.startY)
         } else {
             return Utils.convertPosToRowColRect(pos, this.size, this.startX, this.startY)
         }
@@ -350,7 +354,8 @@ export class DragManager extends Component {
             } else {
                 Utils.drawFullCircle(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
             }
-            
+        } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
+            Utils.drawFullHexagon(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
         } else {
             if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
                 Utils.drawDotRect(this._g, pos, width, height, 3, new Color(255, 255, 255, 80));
