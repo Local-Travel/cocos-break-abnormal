@@ -89,5 +89,6 @@ export class Constant {
   static PROPS_TYPE = PROPS_TYPE;// 道具类型
   static PROPS_NAME = PROPS_NAME;// 道具名称
 
-
+  // drag
+  static RANGE_DISTANCE = 0.5;// 拖拽位置的误差范围
 }

@@ -8,6 +8,8 @@ export class Drag extends Component {
     private _isDragAble: boolean = true; // 是否可以拖拽
     private _oldPos: Vec3 = null; // 最原始的位置
     private _dragNum: number = 0; // 拖拽次数
+    private _specifyPos: Vec3 = null; // 指定位置
+    private _isSpecifyPos: boolean = false; // 是否到达指定位置
     
     onLoad() {
         this._oldPos = this.node.position.clone();
@@ -82,6 +84,22 @@ export class Drag extends Component {
 
     getPosition() {
         return this.node.position;
+    }
+
+    setSpecifyPosition(pos: Vec3) {
+        this._specifyPos = pos;
+    }
+
+    getSpecifyPosition() {
+        return this._specifyPos;
+    }
+
+    setIsSpecifyPos(isSpecifyPos: boolean) {
+        this._isSpecifyPos = isSpecifyPos;
+    }
+
+    getIsSpecifyPos() {
+        return this._isSpecifyPos;
     }
 
     getParentNode() {

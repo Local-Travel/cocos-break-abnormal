@@ -83,10 +83,9 @@ export class TriangleControl extends Component {
         if (pos) {
             drag.setPosition(pos);
             const val = Constant.dragManager.getDragListValue(startIndex);
-            if (val && val.length > 0) {
-                const k1 = Constant.dragManager.setDragListValue(this._index, val[2]);
-                const k2 = Constant.dragManager.setDragListValue(startIndex, null);
-                console.log('k1', k1, k2)
+            if (val && val.length && val[1]) {
+                Constant.dragManager.setDragListValue(this._index, drag);
+                Constant.dragManager.setDragListValue(startIndex, null);
             }
             
             const k = drag.getDragNum();
@@ -96,19 +95,7 @@ export class TriangleControl extends Component {
             drag.setDragNum(k + 1);
         }
 
-        if (this._dragCount >= Constant.dragManager.dragCount) {
-            this._isEnd = true;
-
-            if (this.checkResult()) {
-                console.log('成功');
-                Constant.dialogManager.showTipPic('right', 100, pos);
-            } else {
-                console.log('失败');
-                Constant.dialogManager.showTipPic('wrong', 100, pos, () => {
-                    director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
-                });
-            }
-        }
+        this.checkResult(pos);
     }
 
     /** 是否超出边界 */
@@ -128,14 +115,31 @@ export class TriangleControl extends Component {
         return [index, row, col];
     }
 
-    checkResult() {
-        // for(let i = 0; i < this._answerList.length; i++) {
-        //     if (this._changeList[i] != this._answerList[i]) {
-        //         return false;
-        //     }
-        // }
-        // return true;
-        return Constant.dragManager.checkIsSameList(this._answerList);
+    checkResult(pos: Vec3) {
+        let endFlag = true;
+        const maxDragCount = Constant.dragManager.dragCount;
+        if (maxDragCount !== -1 && this._dragCount < maxDragCount) return;
+        
+        const res = Constant.dragManager.checkIsSameList(this._answerList);
+        if (res) {
+            console.log('成功');
+            Constant.dialogManager.showTipPic('right', 100, pos, () => {
+                director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
+            });
+            // TODO: 弹框
+        } else {
+            if (maxDragCount === -1) {
+                endFlag = false;
+            } else {
+                console.log('失败');
+                // TODO: 弹框
+                Constant.dialogManager.showTipPic('wrong', 100, pos, () => {
+                    director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
+                });
+            }
+        }
+        
+        this._isEnd = endFlag;
     }
 
     drawShapeDotLine(index: number, row: number, drag: Drag) {
@@ -165,7 +169,8 @@ export class TriangleControl extends Component {
 
     getEmptyIndexPos(index: number) {
         const dragVal = Constant.dragManager.getDragListValue(index);
-        if (dragVal && dragVal[1] === 0) {// 有值且位置为空
+        const isAllowRepeat = Constant.dragManager.isAllowRepeat;
+        if (dragVal && (isAllowRepeat || dragVal[1] === 0)) {// 有值且位置为空
             const pos = dragVal[0].clone();
             return pos;
         }

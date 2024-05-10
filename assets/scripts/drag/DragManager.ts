@@ -26,6 +26,7 @@ export class DragManager extends Component {
     colCount: number = 0;// 列数
     rowCount: number = 0;// 行数
     dragCount: number = 0;// 拖动次数
+    isAllowRepeat: boolean = false;// 是否允许重复
     shape: string = '';// 模型形状
     shapeWidth: number = 0;// 模型宽
     shapeHeight: number = 0;// 模型高
@@ -72,6 +73,7 @@ export class DragManager extends Component {
         this.colCount = 0;
         this.rowCount = 0;
         this.dragCount = 0;
+        this.isAllowRepeat = false;
         this.shape = '';
         this.shapeWidth = 0;
         this.shapeHeight = 0;
@@ -86,14 +88,15 @@ export class DragManager extends Component {
         this.resetData();
 
         if (data) {
-            const { list, answer, col, whRatio, isDragLine, shape, dragCount } = data || {};
+            const { list, answer, col, whRatio, isDragLine, shape, dragCount, isRepeat } = data || {};
             const c = col > 0 ? col : 1;
             this.colCount = c;
             this.dragCount = dragCount;
             this._data = data;
             this.shape = shape;
+            this.isAllowRepeat = !!isRepeat;
 
-            if (answer) {
+            if (answer && answer.length) {
                 this.dragControl && this.dragControl.setAnswerList(answer);
             }
             this.batchGenerateDrag(list, c, whRatio, isDragLine, shape);
@@ -210,23 +213,42 @@ export class DragManager extends Component {
         return row * this.colCount + col;
     }
 
+    /** 修改dragList中的index对象值 */
     setDragListValue(index: number, drag: Drag | null) {
         if (index < 0 || index >= this._dragList.length) {
             return false;
         }
         const oldVal = this._dragList[index];
-        const flag = drag ? 1 : 0;
-        const newVal = [oldVal[0], flag, drag];
+        const oldDragList = oldVal.slice(2) || [];
+        if (this.isAllowRepeat) {// 允许重复
+            if (drag) {// 添加
+                oldVal[1] += 1;
+                oldDragList.push(drag);
+            } else {
+                oldVal[1] -= 1;
+                if (oldDragList.length > 1) {// 减少
+                    oldDragList.pop();
+                } else {// 只有一个的时候，清空
+                    oldDragList[0] = null
+                }
+            }
+        } else {// 不允许重复，直接替换
+            oldVal[1] = drag ? 1 : 0;
+            oldDragList[0] = drag
+        }
+        
+        const newVal = [oldVal[0], oldVal[1], ...oldDragList];
         this._dragList[index] = newVal;
         return true;
     }
 
+    /** 只返回位置和个数，防止外部修改drag对象 */
     getDragListValue(index: number) {
         if (index < 0 || index >= this._dragList.length) {
             return null;
         }
         const list = this._dragList[index];
-        return [...list];
+        return list.slice(0, 2);
     }
 
     handleTouchStart(event: EventTouch, drag: Drag) {
@@ -242,8 +264,11 @@ export class DragManager extends Component {
     }
 
     checkIsSameList(list: number[]) {
+        // console.log('this._dragList', this._dragList.map(item => item[1]), list)
         return this._dragList.length === list.length && this._dragList.every((item, index) => {
-            if (item[1] || list[index]) {
+            if (this.isAllowRepeat) {
+                return item[1] === list[index]
+            } else if (item[1] || list[index]) {
                 return item[1] && list[index]
             }
             return true
@@ -252,11 +277,13 @@ export class DragManager extends Component {
 
     clearDragList() {
         this._dragList.forEach((item) => {
-            if (item && item.length >= 3 && item[2]) {
-                const drag = item[2];
-                if (drag && drag.node) {
-                    drag.node.destroy();
-                }
+            if (item && item.length >= 3) {
+                const oldDragList = item.slice(2);
+                oldDragList.forEach((drag) => {
+                    if (drag && drag.node) {
+                        drag.node.destroy();
+                    }
+                });
             }
         });
 
