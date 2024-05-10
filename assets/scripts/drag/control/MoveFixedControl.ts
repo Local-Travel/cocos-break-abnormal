@@ -153,7 +153,7 @@ export class MoveFixedControl extends Component {
         if (Constant.MODEL_SHAPE.CIRCLE === shape) {
             const radius = Constant.dragManager.size / 2;
             Utils.drawDotCircle(this._g, pos, radius, 5, Color.RED);
-        } if (Constant.MODEL_SHAPE.HEXAGON === shape) {
+        } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
             const radius = Constant.dragManager.size / 2;
             Utils.drawFullHexagon(this._g, pos, radius, 2, new Color(255, 0, 0, 200));
         } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
