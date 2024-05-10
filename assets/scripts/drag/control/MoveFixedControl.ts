@@ -4,8 +4,8 @@ import { Constant } from '../../util/Constant';
 import { Utils } from '../../util/Utils';
 const { ccclass, property } = _decorator;
 
-@ccclass('TriangleControl')
-export class TriangleControl extends Component {
+@ccclass('MoveFixedControl')
+export class MoveFixedControl extends Component {
 
     // 变动的列表
     private _changeList: any[] = [];

@@ -1238,7 +1238,7 @@
         "__id__": 70
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 72
@@ -1937,7 +1937,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Triangle",
+    "_name": "MoveFixed",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -2267,7 +2267,7 @@
     "graphics": {
       "__id__": 61
     },
-    "dragControlName": "TriangleControl",
+    "dragControlName": "MoveFixedControl",
     "_id": "880GdKP/hKSZhiXlSyrnpf"
   },
   {
@@ -2741,7 +2741,7 @@
         "__id__": 112
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 114
