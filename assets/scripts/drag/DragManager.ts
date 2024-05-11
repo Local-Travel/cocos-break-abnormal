@@ -139,10 +139,10 @@ export class DragManager extends Component {
                         pos = Utils.convertRowColToPosRectBorder(i, j, size, this.startX, this.startY);
                         break;
                     case Constant.MODEL_SHAPE.HEXAGON:
-                        pos = Utils.convertRowColToPosHexagon(i, j, size, this.startX, this.startY);
+                        pos = Utils.convertRowColToPosHexagonReverse(i, j, size, this.startX, this.startY);
                         break;
                     case Constant.MODEL_SHAPE.HEXAGON_REVERSE:
-                        pos = Utils.convertRowColToPosHexagonReverse(i, j, size, this.startX, this.startY);
+                        pos = Utils.convertRowColToPosHexagon(i, j, size, this.startX, this.startY);
                         break;
                     default:
                         pos = Utils.convertRowColToPosRect(i, j, size, this.startX, this.startY);
@@ -153,9 +153,9 @@ export class DragManager extends Component {
                 // } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
                 //     pos = Utils.convertRowColToPosRectBorder(i, j, size, this.startX, this.startY)
                 // } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
-                //     pos = Utils.convertRowColToPosHexagon(i, j, size, this.startX, this.startY)
-                // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
                 //     pos = Utils.convertRowColToPosHexagonReverse(i, j, size, this.startX, this.startY)
+                // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
+                //     pos = Utils.convertRowColToPosHexagon(i, j, size, this.startX, this.startY)
                 // } else {
                 //     pos = Utils.convertRowColToPosRect(i, j, size, this.startX, this.startY)
                 // }
@@ -285,9 +285,9 @@ export class DragManager extends Component {
             case Constant.MODEL_SHAPE.BORDER_RECT:
                 return Utils.convertPosToRowColRectBorder(pos, this.size, this.startX, this.startY)
             case Constant.MODEL_SHAPE.HEXAGON:
-                return Utils.convertPosToRowColHexagon(pos, this.size, this.startX, this.startY)
-            case Constant.MODEL_SHAPE.HEXAGON_REVERSE:
                 return Utils.convertPosToRowColHexagonReverse(pos, this.size, this.startX, this.startY)
+            case Constant.MODEL_SHAPE.HEXAGON_REVERSE:
+                return Utils.convertPosToRowColHexagon(pos, this.size, this.startX, this.startY)
             default:
                 return Utils.convertPosToRowColRect(pos, this.size, this.startX, this.startY)
         }
@@ -296,9 +296,9 @@ export class DragManager extends Component {
         // } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
         //     return Utils.convertPosToRowColRectBorder(pos, this.size, this.startX, this.startY)
         // } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
-        //     return Utils.convertPosToRowColHexagon(pos, this.size, this.startX, this.startY)
-        // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
         //     return Utils.convertPosToRowColHexagonReverse(pos, this.size, this.startX, this.startY)
+        // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
+        //     return Utils.convertPosToRowColHexagon(pos, this.size, this.startX, this.startY)
         // } else {
         //     return Utils.convertPosToRowColRect(pos, this.size, this.startX, this.startY)
         // }
@@ -397,10 +397,10 @@ export class DragManager extends Component {
                 }
                 break;
             case Constant.MODEL_SHAPE.HEXAGON:
-                Utils.drawFullHexagon(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+                Utils.drawFullHexagonReverse(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
                 break;
             case Constant.MODEL_SHAPE.HEXAGON_REVERSE:
-                Utils.drawFullHexagonReverse(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+                Utils.drawFullHexagon(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
                 break;
             default:
                 if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
@@ -417,9 +417,9 @@ export class DragManager extends Component {
         //         Utils.drawFullCircle(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
         //     }
         // } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
-        //     Utils.drawFullHexagon(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
-        // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
         //     Utils.drawFullHexagonReverse(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+        // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
+        //     Utils.drawFullHexagon(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
         // } else {
         //     if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
         //         Utils.drawDotRect(this._g, pos, width, height, 3, new Color(255, 255, 255, 80));

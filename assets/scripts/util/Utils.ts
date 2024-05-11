@@ -45,7 +45,7 @@ export class Utils {
     }
 
     /** 根据行列转换位置-六边形，左上角起始点 */
-    static convertRowColToPosHexagon(row: number, col: number, size: number, startX: number, startY: number): Vec3 {
+    static convertRowColToPosHexagonReverse(row: number, col: number, size: number, startX: number, startY: number): Vec3 {
         const radius = size / 2;
         const w = 1 / 2 * radius * Math.sqrt(3);
         const x = startX + col * w * 2 + w * (row % 2 + 1);
@@ -54,7 +54,7 @@ export class Utils {
     }
 
     /** 根据位置转换行列-六边形，左上角起始点 */
-    static convertPosToRowColHexagon(pos: Vec3, size: number, startX: number, startY: number): number[] {
+    static convertPosToRowColHexagonReverse(pos: Vec3, size: number, startX: number, startY: number): number[] {
         const radius = size / 2;
         const w = 1 / 2 * radius * Math.sqrt(3);
         const row = Math.round((startY - pos.y) / (radius * 1.5));
@@ -64,7 +64,7 @@ export class Utils {
     }
 
     /** 根据行列转换位置-倒六边形，左上角起始点 */
-    static convertRowColToPosHexagonReverse(row: number, col: number, size: number, startX: number, startY: number): Vec3 {
+    static convertRowColToPosHexagon(row: number, col: number, size: number, startX: number, startY: number): Vec3 {
         const radius = size / 2;
         const h = 1 / 2 * radius * Math.sqrt(3);
         const x = startX + radius + col * 1.5 * radius;
@@ -73,7 +73,7 @@ export class Utils {
     }
 
     /** 根据位置转换行列-倒六边形，左上角起始点 */
-    static convertPosToRowColHexagonReverse(pos: Vec3, size: number, startX: number, startY: number): number[] {
+    static convertPosToRowColHexagon(pos: Vec3, size: number, startX: number, startY: number): number[] {
         const radius = size / 2;
         const h = 1 / 2 * radius * Math.sqrt(3);
         const col = Math.round((pos.x - startX - radius) / (1.5 * radius));
@@ -179,7 +179,7 @@ export class Utils {
     }
 
     /** 画一个实体六边形 */
-    static drawFullHexagon(g: Graphics, pos: Vec3, radius: number, lineWidth: number, fillColor: Color) {
+    static drawFullHexagonReverse(g: Graphics, pos: Vec3, radius: number, lineWidth: number, fillColor: Color) {
         g.lineWidth = lineWidth;
         g.fillColor = fillColor;
         g.strokeColor = new Color(0, 0, 0, 150);
@@ -204,7 +204,7 @@ export class Utils {
     }
 
     /** 画一个实体倒六边形 */
-    static drawFullHexagonReverse(g: Graphics, pos: Vec3, radius: number, lineWidth: number, fillColor: Color) {
+    static drawFullHexagon(g: Graphics, pos: Vec3, radius: number, lineWidth: number, fillColor: Color) {
         g.lineWidth = lineWidth;
         g.fillColor = fillColor;
         g.strokeColor = new Color(0, 0, 0, 150);
