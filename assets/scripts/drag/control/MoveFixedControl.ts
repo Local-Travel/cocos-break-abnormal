@@ -150,23 +150,56 @@ export class MoveFixedControl extends Component {
         // Utils.drawDotCircle(this._g, pos, radius, 5, Color.RED);
         const w = Constant.dragManager.shapeWidth;
         const h = Constant.dragManager.shapeHeight;
-        if (Constant.MODEL_SHAPE.CIRCLE === shape) {
-            const radius = Constant.dragManager.size / 2;
-            Utils.drawDotCircle(this._g, pos, radius, 5, Color.RED);
-        } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
-            const radius = Constant.dragManager.size / 2;
-            Utils.drawFullHexagon(this._g, pos, radius, 2, new Color(255, 0, 0, 200));
-        } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
-            const startRow = this._startList[1];
-            if (row % 2 !== startRow % 2) return false;// 目标和拖动的，对应的奇偶数要相同
-            if (row % 2) {
-                Utils.drawDotRect(this._g, pos, h, w, 3, Color.RED);
-            } else {
+        let radius;
+
+        switch (shape) {
+            case Constant.MODEL_SHAPE.CIRCLE:
+                radius = Constant.dragManager.size / 2;
+                Utils.drawDotCircle(this._g, pos, radius, 5, Color.RED);
+                break;
+            case Constant.MODEL_SHAPE.HEXAGON:
+                radius = Constant.dragManager.size / 2;
+                Utils.drawFullHexagon(this._g, pos, radius, 2, new Color(255, 0, 0, 200));
+                break;
+            case Constant.MODEL_SHAPE.HEXAGON_REVERSE:
+                radius = Constant.dragManager.size / 2;
+                Utils.drawFullHexagonReverse(this._g, pos, radius, 2, new Color(255, 0, 0, 200));
+                break;
+            case Constant.MODEL_SHAPE.BORDER_RECT:
+                const startRow = this._startList[1];
+                if (row % 2 !== startRow % 2) return false;// 目标和拖动的，对应的奇偶数要相同
+                if (row % 2) {
+                    Utils.drawDotRect(this._g, pos, h, w, 3, Color.RED);
+                } else {
+                    Utils.drawDotRect(this._g, pos, w, h, 3, Color.RED);
+                }
+                break;
+            default:
                 Utils.drawDotRect(this._g, pos, w, h, 3, Color.RED);
-            }
-        } else {
-            Utils.drawDotRect(this._g, pos, w, h, 3, Color.RED);
+                break;
         }
+
+        // if (Constant.MODEL_SHAPE.CIRCLE === shape) {
+        //     const radius = Constant.dragManager.size / 2;
+        //     Utils.drawDotCircle(this._g, pos, radius, 5, Color.RED);
+        // } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
+        //     const radius = Constant.dragManager.size / 2;
+        //     Utils.drawFullHexagon(this._g, pos, radius, 2, new Color(255, 0, 0, 200));
+        // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
+        //     const radius = Constant.dragManager.size / 2;
+        //     Utils.drawFullHexagonReverse(this._g, pos, radius, 2, new Color(255, 0, 0, 200));
+        // } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
+        //     const startRow = this._startList[1];
+        //     if (row % 2 !== startRow % 2) return false;// 目标和拖动的，对应的奇偶数要相同
+        //     if (row % 2) {
+        //         Utils.drawDotRect(this._g, pos, h, w, 3, Color.RED);
+        //     } else {
+        //         Utils.drawDotRect(this._g, pos, w, h, 3, Color.RED);
+        //     }
+        // } else {
+        //     Utils.drawDotRect(this._g, pos, w, h, 3, Color.RED);
+        // }
+
         return true;
     }
 

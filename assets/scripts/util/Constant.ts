@@ -20,6 +20,8 @@ enum MODEL_SHAPE {
     TRIANGLE = 'triangle',
     /** 六边形 */
     HEXAGON = 'hexagon',
+    /** 倒六边形 */
+    HEXAGON_REVERSE = 'hexagon-reverse',
     /** 方形边框 */
     BORDER_RECT = 'border-rect',
 }
@@ -91,7 +93,6 @@ export class Constant {
   static SKIN_STYLE = SKIN_STYLE; // 皮肤样式
   static COMMON_PATH_PREFIX = COMMON_PATH_PREFIX; // pic公共路径
 
-
   // block
   static BLOCK_SIZE = 64; // 大小
 
@@ -102,4 +103,5 @@ export class Constant {
   // drag
   static RANGE_DISTANCE = 5;// 拖拽位置的误差范围
   static DRAW_LINE_TYOPE = DRAW_LINE_TYOPE;// 绘制类型
+  static UNDRAGABLED_CODE = -5; // 不能拖动的code
 }

@@ -124,29 +124,51 @@ export class DragManager extends Component {
         let freeMoveIndex = 0;
         
         this.clearLine();
+        let validSkinCode = list.find(item => item > 0);
         for(let i = 0; i < row; i++) {
             const isBorder = i % 2 && isBorderShape;
             for(let j = 0; j < col; j++) {
                 // 获取位置信息
                 let pos;
                 const index = this.getIndex(i, j);
-                if (Constant.MODEL_SHAPE.CIRCLE === shape) {
-                    pos = Utils.convertRowColToPosCircle(i, j, size, this.startX, this.startY)
-                } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
-                    pos = Utils.convertRowColToPosRectBorder(i, j, size, this.startX, this.startY)
-                } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
-                    pos = Utils.convertRowColToPosHexagon(i, j, size, this.startX, this.startY)
-                } else {
-                    pos = Utils.convertRowColToPosRect(i, j, size, this.startX, this.startY)
+                switch(shape) {
+                    case Constant.MODEL_SHAPE.CIRCLE:
+                        pos = Utils.convertRowColToPosCircle(i, j, size, this.startX, this.startY);
+                        break;
+                    case Constant.MODEL_SHAPE.BORDER_RECT:
+                        pos = Utils.convertRowColToPosRectBorder(i, j, size, this.startX, this.startY);
+                        break;
+                    case Constant.MODEL_SHAPE.HEXAGON:
+                        pos = Utils.convertRowColToPosHexagon(i, j, size, this.startX, this.startY);
+                        break;
+                    case Constant.MODEL_SHAPE.HEXAGON_REVERSE:
+                        pos = Utils.convertRowColToPosHexagonReverse(i, j, size, this.startX, this.startY);
+                        break;
+                    default:
+                        pos = Utils.convertRowColToPosRect(i, j, size, this.startX, this.startY);
+                        break;
                 }
+                // if (Constant.MODEL_SHAPE.CIRCLE === shape) {
+                //     pos = Utils.convertRowColToPosCircle(i, j, size, this.startX, this.startY)
+                // } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
+                //     pos = Utils.convertRowColToPosRectBorder(i, j, size, this.startX, this.startY)
+                // } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
+                //     pos = Utils.convertRowColToPosHexagon(i, j, size, this.startX, this.startY)
+                // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
+                //     pos = Utils.convertRowColToPosHexagonReverse(i, j, size, this.startX, this.startY)
+                // } else {
+                //     pos = Utils.convertRowColToPosRect(i, j, size, this.startX, this.startY)
+                // }
 
                 // 设置dragList
+                const code = list[index];
+                const skinCode = code === Constant.UNDRAGABLED_CODE ? validSkinCode : code;
                 if (isFreeMoveMode) {// 自由移动模式
                     freeMovePos = pos;
-                    if (list[index]) {
+                    if (code) {
                         const iPos = posFree && posFree[freeMoveIndex];
                         freeMovePos = iPos && iPos.length ? iPos[0] : pos;
-                        const drag = this.generateDrag(freeMovePos, this.shapeWidth, this.shapeHeight, list[index]);
+                        const drag = this.generateDrag(freeMovePos, this.shapeWidth, this.shapeHeight, skinCode, code);
                         this._dragList.push([freeMovePos, 1, drag]);
                         
                         if (isBorder) {
@@ -176,8 +198,8 @@ export class DragManager extends Component {
                         this._dragList.push([freeMovePos, 0, null]);
                     }
                 } else {
-                    if (list[index]) {
-                        const drag = this.generateDrag(pos, this.shapeWidth, this.shapeHeight, list[index]);
+                    if (code) {
+                        const drag = this.generateDrag(pos, this.shapeWidth, this.shapeHeight, skinCode, code);
                         this._dragList.push([pos, 1, drag]);
                         if (isBorder) {
                             drag.setRotation();
@@ -205,7 +227,7 @@ export class DragManager extends Component {
     }
 
 
-    generateDrag(pos: Vec3, width: number, height: number, skinCode: number = 0) {
+    generateDrag(pos: Vec3, width: number, height: number, skinCode: number, code: number) {
         // 生成拖拽节点
         const dragNode = instantiate(this.dragPrefab);
         this.setDragSize(dragNode, width, height);
@@ -218,6 +240,9 @@ export class DragManager extends Component {
         }
 
         const drag = dragNode.getComponent(Drag);
+        if (code === Constant.UNDRAGABLED_CODE) {
+            drag.setIsDragAble(false);
+        }
         return drag;
     }
 
@@ -254,15 +279,29 @@ export class DragManager extends Component {
 
     convertPosToRowCol(pos: Vec3) {
         const { shape } = this._data;
-        if (Constant.MODEL_SHAPE.CIRCLE === shape) {
-            return Utils.convertPosToRowColCircle(pos, this.size, this.startX, this.startY)
-        } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
-            return Utils.convertPosToRowColRectBorder(pos, this.size, this.startX, this.startY)
-        } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
-            return Utils.convertPosToRowColHexagon(pos, this.size, this.startX, this.startY)
-        } else {
-            return Utils.convertPosToRowColRect(pos, this.size, this.startX, this.startY)
+        switch (shape) {
+            case Constant.MODEL_SHAPE.CIRCLE:
+                return Utils.convertPosToRowColCircle(pos, this.size, this.startX, this.startY)
+            case Constant.MODEL_SHAPE.BORDER_RECT:
+                return Utils.convertPosToRowColRectBorder(pos, this.size, this.startX, this.startY)
+            case Constant.MODEL_SHAPE.HEXAGON:
+                return Utils.convertPosToRowColHexagon(pos, this.size, this.startX, this.startY)
+            case Constant.MODEL_SHAPE.HEXAGON_REVERSE:
+                return Utils.convertPosToRowColHexagonReverse(pos, this.size, this.startX, this.startY)
+            default:
+                return Utils.convertPosToRowColRect(pos, this.size, this.startX, this.startY)
         }
+        // if (Constant.MODEL_SHAPE.CIRCLE === shape) {
+        //     return Utils.convertPosToRowColCircle(pos, this.size, this.startX, this.startY)
+        // } else if (Constant.MODEL_SHAPE.BORDER_RECT === shape) {
+        //     return Utils.convertPosToRowColRectBorder(pos, this.size, this.startX, this.startY)
+        // } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
+        //     return Utils.convertPosToRowColHexagon(pos, this.size, this.startX, this.startY)
+        // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
+        //     return Utils.convertPosToRowColHexagonReverse(pos, this.size, this.startX, this.startY)
+        // } else {
+        //     return Utils.convertPosToRowColRect(pos, this.size, this.startX, this.startY)
+        // }
     }
 
     getIndex(row: number, col: number) {
@@ -325,6 +364,7 @@ export class DragManager extends Component {
             if (this.isAllowRepeat) {
                 return item[1] === list[index]
             } else if (item[1] || list[index]) {
+                // console.log('item[1]', index, item[1], list[index])
                 return item[1] && list[index]
             }
             return true
@@ -348,21 +388,45 @@ export class DragManager extends Component {
 
     drawLine(pos: Vec3, width: number, height: number, dragLineType: string, shape: string = Constant.MODEL_SHAPE.SQUARE) {
         if (!this._g || !dragLineType) return;
-        if (Constant.MODEL_SHAPE.CIRCLE === shape) {
-            if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
-                Utils.drawDotCircle(this._g, pos, this.size / 2, 3, new Color(255, 255, 255, 80));
-            } else {
-                Utils.drawFullCircle(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
-            }
-        } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
-            Utils.drawFullHexagon(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
-        } else {
-            if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
-                Utils.drawDotRect(this._g, pos, width, height, 3, new Color(255, 255, 255, 80));
-            } else {
-                Utils.drawFullRect(this._g, pos, width, height, 2, new Color(255, 255, 255, 60));
-            }
+        switch (shape) {
+            case Constant.MODEL_SHAPE.CIRCLE:
+                if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
+                    Utils.drawDotCircle(this._g, pos, this.size / 2, 3, new Color(255, 255, 255, 80));
+                } else {
+                    Utils.drawFullCircle(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+                }
+                break;
+            case Constant.MODEL_SHAPE.HEXAGON:
+                Utils.drawFullHexagon(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+                break;
+            case Constant.MODEL_SHAPE.HEXAGON_REVERSE:
+                Utils.drawFullHexagonReverse(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+                break;
+            default:
+                if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
+                    Utils.drawDotRect(this._g, pos, width, height, 3, new Color(255, 255, 255, 80));
+                } else {
+                    Utils.drawFullRect(this._g, pos, width, height, 2, new Color(255, 255, 255, 60));
+                }
+                break;
         }
+        // if (Constant.MODEL_SHAPE.CIRCLE === shape) {
+        //     if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
+        //         Utils.drawDotCircle(this._g, pos, this.size / 2, 3, new Color(255, 255, 255, 80));
+        //     } else {
+        //         Utils.drawFullCircle(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+        //     }
+        // } else if (Constant.MODEL_SHAPE.HEXAGON === shape) {
+        //     Utils.drawFullHexagon(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+        // } else if (Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape) {
+        //     Utils.drawFullHexagonReverse(this._g, pos, this.size / 2, 2, new Color(255, 255, 255, 60));
+        // } else {
+        //     if (dragLineType === Constant.DRAW_LINE_TYOPE.DOTLINE) {// 绘制虚线
+        //         Utils.drawDotRect(this._g, pos, width, height, 3, new Color(255, 255, 255, 80));
+        //     } else {
+        //         Utils.drawFullRect(this._g, pos, width, height, 2, new Color(255, 255, 255, 60));
+        //     }
+        // }
     }
 
     clearLine() {
