@@ -1,3 +1,4 @@
+import { Constant } from "../util/Constant";
 
 interface IPosObject {
     x: number;
@@ -33,7 +34,7 @@ interface IDragData {
     shape: string;
     /** 等级名称 */
     levelName: string;
-    /** 显示名称 */
+    /** 任务名称 */
     name: string;
     /** 描述信息 */
     desc: string;
@@ -49,7 +50,7 @@ interface IDragData {
 
 export class DragData {
     /** 获取固定拖动数据 */
-    static getDragData(level: number) {
+    static getFixedMoveData(level: number) {
         // list中的code代表皮肤
         const dragList: IDragData[] = [
             {
@@ -297,6 +298,7 @@ export class DragData {
         return {
             col: data.col,
             list: data.list,
+            type: Constant.PageType.PAGE_MOVE,
             data,
         }
     }
@@ -347,7 +349,19 @@ export class DragData {
         return {
             col: data.col,
             list: data.list,
+            type: Constant.PageType.PAGE_MOVE_FREE,
             data,
+        }
+    }
+
+    static getDragData(level: number) {
+        // 自由拖动的等级
+        const freeLevel = [6];
+
+        if (freeLevel.find(item => item === level)) {
+            return this.getFreeMoveData(level);
+        } else {
+            return this.getFixedMoveData(level);
         }
     }
 }

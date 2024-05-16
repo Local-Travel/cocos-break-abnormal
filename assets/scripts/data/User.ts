@@ -13,8 +13,8 @@ export class User {
     private histScore: number = 0
     /** 游戏道具 */
     private gameProps: any = {}
-    /** 游戏道具名称 */
-    private ballSkin: string = ''
+    /** 游戏主题皮肤 */
+    private themeSkin: string = ''
 
     /** 每个道具初始数量 */
     private propsNum: number = 2
@@ -25,7 +25,7 @@ export class User {
         if (!this._instance) {
             const user = Utils.getLocalStorage('abnormalUser')
             if (user) {
-                this._instance = new User(user.level, user.gold, user.gameProps, user.ballSkin, user.histScore)
+                this._instance = new User(user.level, user.gold, user.gameProps, user.themeSkin, user.histScore)
             } else {
                 this._instance = new User()
             }
@@ -33,16 +33,16 @@ export class User {
         return this._instance
     }
 
-    constructor(level: number = 1, gold: number = 100, gameProps: any = null, ballSkin: string = '', histScore: number = 0) {
+    constructor(level: number = 1, gold: number = 100, gameProps: any = null, themeSkin: string = '', histScore: number = 0) {
         this.level = level
         this.gold = gold
         this.histScore = histScore
-        this.ballSkin = ballSkin || 'Style1'
+        this.themeSkin = themeSkin || 'Style1'
         /** 游戏道具使用对象存储 */
         if (!gameProps) {
             let obj = {}
-            for(let key in Constant.PROPS_NAME) {
-                obj[Constant.PROPS_NAME[key]] = this.propsNum
+            for(let key in Constant.GAME_PROPS_TOOL) {
+                obj[Constant.GAME_PROPS_TOOL[key]] = this.propsNum
             }
             this.gameProps = obj
         } else {
@@ -78,12 +78,12 @@ export class User {
         Utils.setLocalStorage('abnormalUser', this)
     }
 
-    public getBallSkin() {
-        return this.ballSkin
+    public getthemeSkin() {
+        return this.themeSkin
     }
 
-    public setBallSkin(ballSkin: string) {
-        this.ballSkin = ballSkin
+    public setthemeSkin(themeSkin: string) {
+        this.themeSkin = themeSkin
         Utils.setLocalStorage('abnormalUser', this)
     }
 
@@ -94,7 +94,7 @@ export class User {
 
     /** 设置游戏道具 */
     public setGameProps(key: string, num: number) {
-        const name = Constant.PROPS_NAME[key]
+        const name = Constant.GAME_PROPS_TOOL[key]
         if (name) {
             this.gameProps[name] = num > 0 ? num : 0
             Utils.setLocalStorage('abnormalUser', this)

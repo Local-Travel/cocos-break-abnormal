@@ -107,12 +107,14 @@ export class DragManager extends Component {
     }
 
     batchGenerateDrag(list: number[], col: number, whRatio: number, dragLineType: string, shape: string, posFree: any, posFreeAnswer: any) {
+        const isBorderShape = Constant.MODEL_SHAPE.BORDER_RECT === shape;
+        const isHexShape = Constant.MODEL_SHAPE.HEXAGON_REVERSE === shape;
         const row = Math.ceil(list.length / col);
-        const m_width = this.width / col;
+        const m_width = isHexShape ? this.width * 2 / (1.5 * col + 0.5) : this.width / col;
         const m_height = m_width * whRatio;
         const size = Math.max(m_width, m_height);
         // const triangleList = [];
-        const isBorderShape = Constant.MODEL_SHAPE.BORDER_RECT === shape;
+        
         this.size = size;
         this.rowCount = row;
         this.shapeWidth = isBorderShape ? m_width - m_height : m_width;
@@ -199,7 +201,9 @@ export class DragManager extends Component {
                     }
                 } else {
                     if (code) {
-                        const drag = this.generateDrag(pos, this.shapeWidth, this.shapeHeight, skinCode, code);
+                        const skinWidth = isHexShape ? this.shapeWidth * 0.9 : this.shapeWidth;
+                        const skinHeight = isHexShape ? this.shapeHeight * 0.8 : this.shapeHeight;
+                        const drag = this.generateDrag(pos, skinWidth, skinHeight, skinCode, code);
                         this._dragList.push([pos, 1, drag]);
                         if (isBorder) {
                             drag.setRotation();
@@ -384,6 +388,11 @@ export class DragManager extends Component {
         });
 
         this._dragList = [];
+    }
+
+    /** 使用技能 */
+    useSkill(skillName: string) {
+        this.dragControl && this.dragControl.useSkill(skillName);
     }
 
     drawLine(pos: Vec3, width: number, height: number, dragLineType: string, shape: string = Constant.MODEL_SHAPE.SQUARE) {

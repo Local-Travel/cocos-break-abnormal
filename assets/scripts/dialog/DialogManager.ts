@@ -2,6 +2,7 @@ import { _decorator, Component, Label, Node, resources, Size, Sprite, SpriteFram
 import { Constant } from '../util/Constant';
 // import { EndlessFail } from './EndlessFail';
 import { Utils } from '../util/Utils';
+import { Chest } from './Chest';
 const { ccclass, property } = _decorator;
 
 @ccclass('DialogManager')
@@ -11,6 +12,9 @@ export class DialogManager extends Component {
 
     @property(Node)
     PicTip: Node = null
+
+    @property(Chest)
+    chest: Chest = null
 
     // @property(EndlessFail)
     // endlessFail: EndlessFail = null
@@ -94,6 +98,10 @@ export class DialogManager extends Component {
             cb()
         })
         .start()
+    }
+
+    showChest() {
+        this.chest.showModal()
     }
 
 }

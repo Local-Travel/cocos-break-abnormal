@@ -86,6 +86,11 @@ export class MoveFreeControl extends Component {
         this.checkResult(this._movePos);
     }
 
+    /** 使用技能 */
+    useSkill(skillName: string) {
+        
+    }
+
     checkResult(pos: Vec3) {
         let endFlag = true;
         const maxDragCount = Constant.dragManager.dragCount;
@@ -97,7 +102,8 @@ export class MoveFreeControl extends Component {
         if (res) {
             console.log('成功');
             Constant.dialogManager.showTipPic('right', 100, pos, () => {
-                director.emit(Constant.EVENT_TYPE.PAGE_MOVE_FREE_RESET);
+                // director.emit(Constant.EVENT_TYPE.PAGE_MOVE_FREE_RESET);
+                Constant.gameManager.gamePass();
             });
             // TODO: 弹框
         } else {
@@ -107,7 +113,8 @@ export class MoveFreeControl extends Component {
                 console.log('失败');
                 // TODO: 弹框
                 Constant.dialogManager.showTipPic('wrong', 100, pos, () => {
-                    director.emit(Constant.EVENT_TYPE.PAGE_MOVE_FREE_RESET);
+                    // director.emit(Constant.EVENT_TYPE.PAGE_MOVE_FREE_RESET);
+                    Constant.gameManager.init();
                 });
             }
         }

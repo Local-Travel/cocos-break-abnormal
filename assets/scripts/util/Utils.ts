@@ -1,4 +1,5 @@
-import { Color, Graphics, Vec2, Vec3, _decorator, math, misc, sys } from 'cc';
+import { Color, Graphics, Vec2, Vec3, _decorator, math, misc, sys, log } from 'cc';
+import { WECHAT, BYTEDANCE, BAIDU } from "cc/env"
 
 export class Utils {
     /** 根据行列转换位置-方块，左上角起始点 */
@@ -259,5 +260,95 @@ export class Utils {
         }
         return null
     }
+
+    /**
+  * 调用振动效果
+  */
+  static vibrateShort() {
+    if (WECHAT && typeof (<any>window).wx !== undefined) {// 微信
+      (<any>window).wx.vibrateShort({
+        type: 'heavy',
+        success: () => log('调用振动成功'),
+        fail: (err) => log('调用振动失败', err),
+      });
+    }
+    if (BYTEDANCE && typeof (<any>window).tt !== undefined) {// 字节
+      (<any>window).tt.vibrateShort({
+        success: () => log('调用振动成功'),
+        fail: (err) => log('调用振动失败', err),
+      });
+    }
+    if (BAIDU && typeof (<any>window).swan !== undefined) {// 百度
+      (<any>window).swan.vibrateShort({
+        success: () => log('调用振动成功'),
+        fail: (err) => log('调用振动失败', err),
+      });
+    }
+  }
+
+  /**
+   * 被动分享
+   */
+  static passiveShare() {
+    if (WECHAT && typeof (<any>window).wx !== undefined) {// 微信
+      // 显示当前页面的转发按钮
+      (<any>window).wx.showShareMenu({
+        withShareTicket: false,
+        menus: ['shareAppMessage', 'shareTimeline'],
+        success: (res) => {
+          console.log('开启被动转发成功！');
+        },
+        fail: (res) => {
+          console.log(res);
+          console.log('开启被动转发失败！');
+        }
+      });
+
+      // 监听用户点击右上角分享按钮
+      (<any>window).wx.onShareAppMessage((res) => {
+        console.log('用户点击右上角分享按钮', res);
+        return {
+          // title: '',
+          query: 'shareMsg=' + 'share user2'  // query最大长度(length)为2048
+        }
+      })
+        // 监听用户点击右上角分享按钮
+        (<any>window).wx.onShareTimeline((res) => {
+          console.log('用户点击右上角分享按钮', res);
+          return {
+            // title: '', 
+            query: 'shareMsg=' + 'share user3'  // query最大长度(length)为2048
+          }
+        })
+    }
+  }
+
+  /**
+   * 调用主动分享
+   */
+  static activeShare(shareStr: string = 'share user1') {
+    // 主动分享按钮
+    if (WECHAT && typeof (<any>window).wx !== undefined) {// 微信
+      (<any>window).wx.shareAppMessage({
+        // imageUrl: '',
+        query: 'shareMsg=' + shareStr  // query最大长度(length)为2048
+      });
+    }
+  }
+
+
+  /**
+   * 获取微信分享数据
+   * 当其他玩家从分享卡片上点击进入时，获取query参数
+   * @returns 
+   */
+  static getWXQuery() {
+    if (WECHAT && typeof (<any>window).wx !== undefined) {// 微信
+      let object = (<any>window).wx.getLaunchOptionsSync();
+      let shareMsg = object.query['shareMsg'];
+      console.log(shareMsg);
+      return shareMsg;
+    }
+  }
 }
 

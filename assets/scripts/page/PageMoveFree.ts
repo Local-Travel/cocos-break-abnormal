@@ -1,24 +1,55 @@
 import { _decorator, Component, director, Label, Node } from 'cc';
 import { Constant } from '../util/Constant';
 import { DragData } from '../data/DragData';
+import { PageClue } from './PageClue';
 const { ccclass, property } = _decorator;
 
 @ccclass('PageMoveFree')
 export class PageMoveFree extends Component {
+    @property(PageClue)
+    pageClue: PageClue = null;
+    // 顶部
     @property(Node)
     taskLabel: Node = null;
-
     @property(Node)
     timeNode: Node = null;
 
+    // 底部
+    @property(Node)
+    btnToolNode: Node = null;
+    @property(Node)
+    btnTipNode: Node = null;
+    @property(Node)
+    btnAddTimeNode: Node = null;
+
+    @property(Node)
+    toolIconNode: Node = null;
+    @property(Node)
+    toolNameNode: Node = null;
+
+    private _taskName: string = '';
     private _time: number = 0;
+    private _dataTime: number = 0;
+    private _toolName: string = 'key';
     
     protected onLoad(): void {
-        director.on(Constant.EVENT_TYPE.PAGE_MOVE_FREE_RESET, this.init, this);
+        director.on(Constant.EVENT_TYPE.PAGE_MOVE_FREE_RESET, this.reset, this);
+    }
+
+    protected onEnable(): void {
+        this.btnToolNode.on(Node.EventType.TOUCH_END, this.onToolClick, this)
+        this.btnTipNode.on(Node.EventType.TOUCH_END, this.onTipClick, this)
+        this.btnAddTimeNode.on(Node.EventType.TOUCH_END, this.onAddTimeClick, this)
+    }
+
+    protected onDisable(): void {
+        this.btnToolNode.off(Node.EventType.TOUCH_END, this.onToolClick, this)
+        this.btnTipNode.off(Node.EventType.TOUCH_END, this.onTipClick, this)
+        this.btnAddTimeNode.off(Node.EventType.TOUCH_END, this.onAddTimeClick, this)
     }
 
     start() {
-        this.init();
+
     }
 
     update(deltaTime: number) {
@@ -31,19 +62,42 @@ export class PageMoveFree extends Component {
         this.unschedule(this.setTimeClock);
     }
 
-    init() {
-        const { data } = DragData.getFreeMoveData(1);
-        Constant.dragManager.init(data);
-        const { limitTime = 180 } = data || {};
+    reset() {
+        this.init(this._taskName, this._dataTime);
+    }
 
+    init(name: string, limitTime: number) {
         this._time = limitTime;
+        this._dataTime = limitTime;
         this.unschedule(this.setTimeClock);
         this.schedule(this.setTimeClock, 1);
-        this.setTitle(data.name);
+        this.setTitle(name);
+
+        // this.setToolName('key');
     }
 
     setTitle(title: string) {
         this.taskLabel.getComponent(Label).string = title;
+    }
+
+    setTool(tool: string) {
+        const toolObj = Constant.GAME_PROPS_TOOL[tool] || {}
+        const iconName = toolObj.iconName;
+        const toolName = toolObj.name;
+        this.toolNameNode.getComponent(Label).string = toolName || '';
+    }
+
+    setToolName(toolName: string) {
+        if (!toolName) return;
+        this._toolName = toolName;
+
+        if (this._toolName) {
+            this.btnToolNode.active = true;
+            this.setTool(this._toolName);
+        } else {
+            this.btnToolNode.active = false;
+        }
+        this.setTool(toolName);
     }
 
     showTimeClock(time: number) {
@@ -61,13 +115,30 @@ export class PageMoveFree extends Component {
         if (this._time <= 0) {
             this.unschedule(this.setTimeClock);
 
-            console.log('游戏结束');
-            Constant.dialogManager.showTipLabel('游戏结束', () => {
-                this.init();
+            console.log('游戏超时');
+            Constant.dialogManager.showTipLabel('游戏超时', () => {
+                this.reset();
             });
         } else {
             this.showTimeClock(this._time);
         }
+    }
+
+    onToolClick() {
+        // console.log('onToolClick');
+        // Constant.dialogManager.showTipLabel('功能开发中...');
+        Constant.gameManager.useSkill(this._toolName);
+    }
+
+    onTipClick() {
+        // console.log('onTipClick');
+        this.pageClue.show();
+    }
+
+    onAddTimeClick() {
+        // console.log('onAddTimeClick');
+        // Constant.dialogManager.showTipLabel('功能开发中...');
+        this._time += this._dataTime;
     }
 }
 

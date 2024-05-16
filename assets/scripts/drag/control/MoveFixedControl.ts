@@ -98,6 +98,11 @@ export class MoveFixedControl extends Component {
         this.checkResult(pos);
     }
 
+    /** 使用技能 */
+    useSkill(skillName: string) {
+        
+    }
+
     /** 是否超出边界 */
     checkOutOfBounds(pos: Vec3, drag: Drag) {
         const parentBox = drag.getParentRectBox();
@@ -124,7 +129,8 @@ export class MoveFixedControl extends Component {
         if (res) {
             console.log('成功');
             Constant.dialogManager.showTipPic('right', 100, pos, () => {
-                director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
+                // director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
+                Constant.gameManager.gamePass();
             });
             // TODO: 弹框
         } else {
@@ -134,7 +140,8 @@ export class MoveFixedControl extends Component {
                 console.log('失败');
                 // TODO: 弹框
                 Constant.dialogManager.showTipPic('wrong', 100, pos, () => {
-                    director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
+                    // director.emit(Constant.EVENT_TYPE.PAGE_MOVE_RESET);
+                    Constant.gameManager.init();
                 });
             }
         }
@@ -220,5 +227,7 @@ export class MoveFixedControl extends Component {
     setGraphics(g: Graphics) {
         this._g = g;
     }
+
+    
 }
 

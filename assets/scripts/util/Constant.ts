@@ -56,22 +56,89 @@ const SKIN_STYLE = {
 /** 公共路径前缀 */
 const COMMON_PATH_PREFIX = 'texture/common/'
 
-/** 
- * 道具名称
- */
-enum PROPS_NAME {
-  /** 炸弹球 */
-  BOMB = 'bomb',
+enum PageType {
+  /** 随意移动页面 */
+  PAGE_MOVE_FREE = 'page-move-free',
+  /** 固定移动页面 */
+  PAGE_MOVE = 'page-move',
 }
 
-/** 道具类型 */
-const PROPS_TYPE = {
+// /** 
+//  * 道具名称
+//  */
+// enum PROPS_NAME {
+//   /** 炸弹球 */
+//   BOMB = 'bomb',
+// }
+
+/** 道具 */
+const GAME_PROPS_TOOL = {
   /** 炸弹球 */
   bomb: {
-    name: PROPS_NAME.BOMB,
-    desc: '炸弹泡泡可以消除方圆内的泡泡',
+    iconName: 'bomb',
+    name: '炸弹',
+    desc: '炸弹可以炸毁页面内的所有物体',
     value: 1,
   },
+  /** 叠加 */
+  cover: {
+    iconName: 'cover',
+    name: '叠加',
+    desc: '叠加可以重复覆盖方块内已有的物体',
+    value: 10,
+  },
+  /** 触摸 */
+  touch: {
+    iconName: 'touch',
+    name: '触摸',
+    desc: '触摸可以显示方块内隐藏的物体',
+    value: 1,
+  },
+  /** 锤子 */
+  hammer: {
+    iconName: 'hammer',
+    name: '锤子',
+    desc: '锤子可以破坏方块表面物体',
+    value: 1,
+  },
+  /** 打开门 */
+  exitDoor: {
+    iconName: 'exitDoor',
+    name: '开门',
+    desc: '开门可以离开',
+    value: 100,
+  },
+  /** 钥匙 */
+  key: {
+    iconName: 'key',
+    name: '钥匙',
+    desc: '钥匙可以打开页面内的锁',
+    value: 10,
+  },
+  /** 弓箭 */
+  shot: {
+    iconName: 'shot',
+    name: '弓箭',
+    desc: '弓箭可以射击顶部的物体',
+    value: 1,
+  },
+  /** 绕行 */
+  slalom: {
+    iconName: 'slalom',
+    name: '绕行',
+    desc: '绕行技能可以巧妙通过障碍物',
+    value: 1,
+  },
+}
+
+/** 游戏状态 */
+enum GAME_STATE {
+  /** 游戏准备中 */
+  READY = 'ready',
+  /** 游戏进行中 */
+  PLAYING = 'playing',
+  /** 游戏结束 */
+  END = 'end',
 }
 
 export class Constant {
@@ -82,7 +149,8 @@ export class Constant {
   static dialogManager: DialogManager;
   
   // game
-
+  static GAME_STATE = GAME_STATE; // 游戏状态
+  
   // event
   static EVENT_TYPE = EVENT_TYPE; // 事件类型
 
@@ -95,13 +163,17 @@ export class Constant {
 
   // block
   static BLOCK_SIZE = 64; // 大小
+  static GRID_START_POINT = new Vec3(-8, 0, 8 * 1.5); // 网格起始点
+  static GRID_START_POINT_Y = 8; // 网格起始点Y，x需要根据列数动态计算
 
   // props
-  static PROPS_TYPE = PROPS_TYPE;// 道具类型
-  static PROPS_NAME = PROPS_NAME;// 道具名称
+  static GAME_PROPS_TOOL = GAME_PROPS_TOOL;// 道具
 
   // drag
   static RANGE_DISTANCE = 5;// 拖拽位置的误差范围
   static DRAW_LINE_TYOPE = DRAW_LINE_TYOPE;// 绘制类型
   static UNDRAGABLED_CODE = -5; // 不能拖动的code
+
+  // page
+  static PageType = PageType; // 页面类型
 }
