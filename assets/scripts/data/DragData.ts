@@ -12,13 +12,21 @@ interface IPosAnswerObject {
     /** 误差范围 */
     distance: number;
 }
+
+interface IRotationAnswerObject {
+    x: number;
+    y: number;
+    z: number;
+    /** 误差范围 */
+    rotation: number;
+}
 interface IPos {
-    /** 位置索引：[位置，旋转] */
+    /** 位置索引：[位置] */
     [index: string]: IPosObject[];
 }
 interface IPosAnswer {
-    /** 位置索引：[位置，旋转] */
-    [index: string]: IPosAnswerObject[];
+    /** 位置索引：[旋转] */
+    [index: string]: (IPosAnswerObject | IRotationAnswerObject)[];
 }
 interface IDragData {
     /** 皮肤个数 */
