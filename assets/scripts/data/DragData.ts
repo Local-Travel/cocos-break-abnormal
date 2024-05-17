@@ -244,7 +244,7 @@ export class DragData {
                 limitTime: 180,
                 dragCount: 3,
                 isRepeat: false,
-                dragLineType: 'full',
+                dragLineType: '',
                 whRatio: 1,
                 col: 7,
                 shape: 'hexagon-reverse',
@@ -496,7 +496,7 @@ export class DragData {
                     3: [{ x: -56, y: 108, z: 0 }],
                 },
                 posFreeAnswer: {
-                    2: [{ x: -2, y: 158, z: 0, distance: 3 }],
+                    2: [{ x: -2, y: 158, z: 0, distance: 4 }],
                 },
             },
             {
@@ -560,11 +560,13 @@ export class DragData {
 
     static getDragData(level: number) {
         // 自由拖动的等级
-        const freeLevel = [6, 8];
+        const freeLevel = [6, 8, 12];
         const index = freeLevel.findIndex(item => item === level);
 
         if (index < 0) {
-            return this.getFixedMoveData(level - freeLevel.length);
+            const subLevelList = freeLevel.filter(item => item < level);
+            const newLevel = level - subLevelList.length;
+            return this.getFixedMoveData(newLevel);
         } else {
             return this.getFreeMoveData(index);
         }

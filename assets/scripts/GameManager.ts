@@ -38,18 +38,19 @@ export class GameManager extends Component {
     init() {
         const user = User.instance();
         const userLevel = this.userLevelTest || user.getLevel();
-        // const { col, list, data } = BlockData.getLevelData(userLevel);
-        // this.levelData = data;
-        console.log('userLevel', userLevel)
         this._userLevel = userLevel;
-
         this.gameState = Constant.GAME_STATE.READY;
+        const { data, type } = DragData.getDragData(this._userLevel);
 
-        const { data, type } = DragData.getDragData(userLevel);
+        console.log('userLevel', userLevel, this._userLevel);
 
         if (type === Constant.PageType.PAGE_MOVE_FREE) {
+            this.showPageMoveFree(true);
+            this.showPageMove(false);
             this.pageMoveFree.init(data.name, data.limitTime);
         } else {
+            this.showPageMoveFree(false);
+            this.showPageMove(true);
             this.pageMove.init(data.name, data.limitTime);
         }
 
@@ -59,7 +60,16 @@ export class GameManager extends Component {
         this.gameState = Constant.GAME_STATE.PLAYING;
     }
 
+    showPageMove(isShow: boolean) {
+        this.pageMove.node.active = isShow;
+    }
+
+    showPageMoveFree(isShow: boolean) {
+        this.pageMoveFree.node.active = isShow;
+    }
+
     updateUserLevel() {
+        this._userLevel += 1;
         const user = User.instance();
         const newLevel = user.getLevel() + 1;
         user.setLevel(newLevel);
@@ -80,7 +90,7 @@ export class GameManager extends Component {
     gamePass() {
         this.gameState = Constant.GAME_STATE.END;
         const newLevel = this.updateUserLevel();
-        if (newLevel % 5 || newLevel === 2) {
+        if (newLevel % 5 === 0 || newLevel === 2) {
             // 结束，大礼包
             Constant.dialogManager.showChest();
         }

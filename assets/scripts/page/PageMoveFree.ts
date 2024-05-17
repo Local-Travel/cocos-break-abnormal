@@ -67,6 +67,7 @@ export class PageMoveFree extends Component {
     }
 
     init(name: string, limitTime: number) {
+        console.log('pageMoveFree init', name, limitTime);
         this._taskName = name;
         this._time = limitTime;
         this._dataTime = limitTime;

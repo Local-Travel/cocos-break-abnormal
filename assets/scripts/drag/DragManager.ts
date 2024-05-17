@@ -44,6 +44,22 @@ export class DragManager extends Component {
     }
 
     onLoad() {
+        
+    }
+
+    protected onEnable(): void {
+        this.initControl();
+    }
+
+    start() {
+
+    }
+
+    update(deltaTime: number) {
+        
+    }
+
+    initControl() {
         const uiTransform = this.node.getComponent(UITransform);
         const { width, height } = uiTransform.contentSize;
         // 左上角位置
@@ -58,14 +74,6 @@ export class DragManager extends Component {
             const g = this.graphics.getComponent(Graphics);
             this.dragControl.setGraphics(g);
         }
-    }
-
-    start() {
-
-    }
-
-    update(deltaTime: number) {
-        
     }
 
     resetData() {

@@ -4121,7 +4121,7 @@
       "__id__": 108
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 110
@@ -4623,7 +4623,7 @@
       "__id__": 122
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 124
@@ -15085,7 +15085,7 @@
     "pageMoveFree": {
       "__id__": 204
     },
-    "userLevelTest": 8,
+    "userLevelTest": 0,
     "_id": "8fbqIh/6JPPKX4RAzPvgrj"
   },
   {

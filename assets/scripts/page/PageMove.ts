@@ -75,6 +75,8 @@ export class PageMove extends Component {
         this.unschedule(this.setTimeClock);
         this.schedule(this.setTimeClock, 1);
         this.setTitle(name);
+
+        // this.setToolName('cover');
     }
 
     setTitle(title: string) {
