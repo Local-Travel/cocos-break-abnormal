@@ -64,7 +64,7 @@ export class PageMove extends Component {
     }
 
     reset() {
-        this.init(this._taskName, this._dataTime);
+        Constant.gameManager.resetInitPos();
     }
 
     init(name: string, limitTime: number) {
@@ -97,9 +97,10 @@ export class PageMove extends Component {
             this.unschedule(this.setTimeClock);
 
             console.log('游戏超时');
-            Constant.dialogManager.showTipLabel('游戏超时', () => {
-                this.reset();
-            });
+            // Constant.dialogManager.showTipLabel('游戏超时', () => {
+            //     Constant.gameManager.gameOver();
+            // });
+            Constant.gameManager.gameOver();
         } else {
             this.showTimeClock(this._time);
         }

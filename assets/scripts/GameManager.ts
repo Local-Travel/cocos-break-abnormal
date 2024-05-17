@@ -27,7 +27,8 @@ export class GameManager extends Component {
     }
     
     start() {
-        this.init();
+        // this.init();
+        Constant.dialogManager.showWelcomeBox();
     }
 
     update(deltaTime: number) {
@@ -54,6 +55,7 @@ export class GameManager extends Component {
 
         Constant.dragManager.init(data);
 
+        this.levelData = data;
         this.gameState = Constant.GAME_STATE.PLAYING;
     }
 
@@ -64,10 +66,15 @@ export class GameManager extends Component {
         return newLevel;
     }
 
+    resetInitPos() {
+        Constant.dragManager.init(this.levelData);
+    }
+
     gameOver() {
         this.gameState = Constant.GAME_STATE.END;
-        // 失败，重新开始
-        this.init();
+        // 游戏超时
+        Constant.dialogManager.showTimeOutBox();
+        // this.init();
     }
 
     gamePass() {

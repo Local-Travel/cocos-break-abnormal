@@ -105,7 +105,7 @@ export class Drag extends Component {
         if (!this._specifyPos) return false;
         const pos = this.getPosition();
         const posDistance = pos.clone().subtract(this._specifyPos).length();
-        // console.log('posDistance', posDistance, this._specifyPosDistance)
+        console.log('posDistance', posDistance, this._specifyPosDistance)
         if (posDistance <= this._specifyPosDistance) {
             return true;
         }

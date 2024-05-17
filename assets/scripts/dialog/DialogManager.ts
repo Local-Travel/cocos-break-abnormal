@@ -3,6 +3,8 @@ import { Constant } from '../util/Constant';
 // import { EndlessFail } from './EndlessFail';
 import { Utils } from '../util/Utils';
 import { Chest } from './Chest';
+import { TimeOutBox } from './TimeOutBox';
+import { WelcomeBox } from './WelcomeBox';
 const { ccclass, property } = _decorator;
 
 @ccclass('DialogManager')
@@ -15,6 +17,12 @@ export class DialogManager extends Component {
 
     @property(Chest)
     chest: Chest = null
+
+    @property(TimeOutBox)
+    timeOutBox: TimeOutBox = null
+
+    @property(WelcomeBox)
+    welcomeBox: WelcomeBox = null
 
     // @property(EndlessFail)
     // endlessFail: EndlessFail = null
@@ -102,6 +110,14 @@ export class DialogManager extends Component {
 
     showChest() {
         this.chest.showModal()
+    }
+
+    showTimeOutBox() {
+        this.timeOutBox.showModal()
+    }
+
+    showWelcomeBox() {
+        this.welcomeBox.showModal()
     }
 
 }

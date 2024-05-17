@@ -110,11 +110,11 @@ export class MoveFreeControl extends Component {
             if (maxDragCount === -1) {
                 endFlag = false;
             } else {
-                console.log('失败');
+                console.log('错误');
                 // TODO: 弹框
                 Constant.dialogManager.showTipPic('wrong', 100, pos, () => {
                     // director.emit(Constant.EVENT_TYPE.PAGE_MOVE_FREE_RESET);
-                    Constant.gameManager.init();
+                    Constant.gameManager.resetInitPos();
                 });
             }
         }
